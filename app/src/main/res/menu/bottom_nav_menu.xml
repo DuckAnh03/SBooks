@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home_24"
+        android:title="@string/nav_home_title"/>
+    <item
+        android:id="@+id/nav_cart"
+        android:icon="@drawable/ic_add_shopping_cart_24"
+        android:title="@string/nav_cart_title"/>
+    <item
+        android:id="@+id/nav_user"
+        android:icon="@drawable/ic_account_24"
+        android:title="@string/nav_account_title"/>
+</menu>
