@@ -1,3 +1,58 @@
 <resources>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- Card margins and padding -->
+    <dimen name="card_margin">8dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_radius">8dp</dimen>
+
+    <!-- Text sizes -->
+    <dimen name="text_size_large">24sp</dimen>
+    <dimen name="text_size_medium">18sp</dimen>
+    <dimen name="text_size_normal">16sp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
+    <dimen name="text_size_tiny">12sp</dimen>
+
+    <!-- Button dimensions -->
+    <dimen name="button_height">48dp</dimen>
+    <dimen name="button_radius">24dp</dimen>
+
+    <!-- Input dimensions -->
+    <dimen name="input_height">56dp</dimen>
+    <dimen name="input_radius">8dp</dimen>
+
+    <!-- Icon sizes -->
+    <dimen name="icon_size_small">24dp</dimen>
+    <dimen name="icon_size_medium">32dp</dimen>
+    <dimen name="icon_size_large">48dp</dimen>
+
+    <!-- Spacing -->
+    <dimen name="spacing_tiny">4dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_medium">16dp</dimen>
+    <dimen name="spacing_large">24dp</dimen>
+    <dimen name="spacing_xlarge">32dp</dimen>
+
+    <!-- Navigation -->
+    <dimen name="nav_header_height">176dp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+
+    <!-- FAB margin -->
     <dimen name="fab_margin">16dp</dimen>
+
+    <!-- List item heights -->
+    <dimen name="list_item_height">72dp</dimen>
+    <dimen name="list_item_height_small">48dp</dimen>
+
+    <!-- Elevation -->
+    <dimen name="elevation_card">4dp</dimen>
+    <dimen name="elevation_fab">6dp</dimen>
+    <dimen name="elevation_dialog">8dp</dimen>
+
+    <!-- Border widths -->
+    <dimen name="border_width_thin">1dp</dimen>
+    <dimen name="border_width_medium">2dp</dimen>
+    <dimen name="border_width_thick">4dp</dimen>
 </resources>

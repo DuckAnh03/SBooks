@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/spacing_tiny"
+    app:cardCornerRadius="@dimen/card_radius"
+    app:cardElevation="2dp"
+    android:foreground="@drawable/ripple_effect">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/card_padding">
+
+        <!-- User Avatar -->
+        <ImageView
+            android:id="@+id/iv_user_avatar"
+            android:layout_width="@dimen/icon_size_large"
+            android:layout_height="@dimen/icon_size_large"
+            android:layout_marginEnd="@dimen/spacing_medium"
+            android:background="@drawable/bg_circle"
+            android:src="@drawable/ic_users"
+            android:padding="@dimen/spacing_small" />
+
+        <!-- User Info -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_user_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nguyễn Văn A"
+                android:textSize="@dimen/text_size_normal"
+                android:textStyle="bold"
+                android:textColor="@color/colorTextPrimary" />
+
+            <TextView
+                android:id="@+id/tv_user_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_tiny"
+                android:text="nguyenvana@email.com"
+                android:textSize="@dimen/text_size_small"
+                android:textColor="@color/colorTextSecondary" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_tiny"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_user_role"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Khách hàng"
+                    android:textSize="@dimen/text_size_tiny"
+                    android:textColor="@color/white"
+                    android:background="@drawable/bg_role_customer"
+                    android:paddingHorizontal="@dimen/spacing_small"
+                    android:paddingVertical="@dimen/spacing_tiny" />
+
+                <TextView
+                    android:id="@+id/tv_user_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_small"
+                    android:text="Hoạt động"
+                    android:textSize="@dimen/text_size_tiny"
+                    android:textColor="@color/white"
+                    android:background="@drawable/bg_status_active"
+                    android:paddingHorizontal="@dimen/spacing_small"
+                    android:paddingVertical="@dimen/spacing_tiny" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/btn_edit_user"
+                android:layout_width="@dimen/icon_size_medium"
+                android:layout_height="@dimen/icon_size_medium"
+                android:layout_marginBottom="@dimen/spacing_small"
+                android:background="@drawable/bg_button_icon"
+                android:src="@drawable/ic_edit"
+                android:contentDescription="@string/edit" />
+
+            <ImageButton
+                android:id="@+id/btn_delete_user"
+                android:layout_width="@dimen/icon_size_medium"
+                android:layout_height="@dimen/icon_size_medium"
+                android:background="@drawable/bg_button_icon_danger"
+                android:src="@drawable/ic_delete"
+                android:contentDescription="@string/delete" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

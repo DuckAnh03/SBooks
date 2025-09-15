@@ -10,14 +10,11 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_login)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.btnLogin)) { v, insets ->
+        setContentView(R.layout.activity_admin_main)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.drawer_layout)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            // chỉ thêm padding top cho status bar, bỏ padding bottom
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
             insets
         }
-
-
     }
 }
