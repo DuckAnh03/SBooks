@@ -1,6 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/spacing_tiny"
+    app:cardCornerRadius="@dimen/card_radius"
+    app:cardElevation="1dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/spacing_medium">
+
+        <!-- Rank Badge -->
+        <TextView
+            android:id="@+id/tv_rank"
+            android:layout_width="@dimen/icon_size_medium"
+            android:layout_height="@dimen/icon_size_medium"
+            android:layout_marginEnd="@dimen/spacing_medium"
+            android:text="1"
+            android:textSize="@dimen/text_size_normal"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_rank_badge"
+            android:gravity="center" />
+
+        <!-- Book Image -->
+        <ImageView
+            android:id="@+id/iv_book_image"
+            android:layout_width="50dp"
+            android:layout_height="65dp"
+            android:layout_marginEnd="@dimen/spacing_medium"
+            android:background="@drawable/bg_book_placeholder"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_book" />
+
+        <!-- Book Info -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_book_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tên sách bestseller"
+                android:textSize="@dimen/text_size_normal"
+                android:textStyle="bold"
+                android:textColor="@color/colorTextPrimary"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/tv_book_author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_tiny"
+                android:text="Tác giả"
+                android:textSize="@dimen/text_size_small"
+                android:textColor="@color/colorTextSecondary" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Đã bán:"
+                    android:textSize="@dimen/text_size_small"
+                    android:textColor="@color/colorTextSecondary" />
+
+                <TextView
+                    android:id="@+id/tv_sold_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_tiny"
+                    android:text="125"
+                    android:textSize="@dimen/text_size_small"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorSuccess" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_tiny"
+                    android:text="cuốn"
+                    android:textSize="@dimen/text_size_small"
+                    android:textColor="@color/colorTextSecondary" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Price -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <TextView
+                android:id="@+id/tv_book_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="250,000 VNĐ"
+                android:textSize="@dimen/text_size_small"
+                android:textStyle="bold"
+                android:textColor="@color/colorAccent" />
+
+            <TextView
+                android:id="@+id/tv_revenue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_tiny"
+                android:text="31.25M VNĐ"
+                android:textSize="@dimen/text_size_tiny"
+                android:textColor="@color/colorSuccess" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
