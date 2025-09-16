@@ -11,8 +11,8 @@
     <string name="search_hint">Tìm kiếm sản phẩm&#8230;</string>
 
     <!-- Nav Menu -->
-    <string name="nav_home_title">Trang chủ</string>
     <string name="nav_cart_title">Giỏ hàng</string>
+    <string name="nav_home_title">Trang chủ</string>
     <string name="nav_order_title">Đơn hàng</string>
     <string name="nav_account_title">Tài khoản</string>
 
@@ -22,6 +22,166 @@
 
     <string name="lorem_ipsum">
     </string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Login -->
+    <string name="login_title">Đăng nhập StarBooks</string>
+    <string name="username">Tên đăng nhập</string>
+    <string name="password">Mật khẩu</string>
+    <string name="login">Đăng nhập</string>
+    <string name="forgot_password">Quên mật khẩu?</string>
+
+    <!-- Admin Navigation -->
+    <string name="admin_dashboard">Bảng điều khiển</string>
+    <string name="admin_users">Quản lý người dùng</string>
+    <string name="admin_books">Quản lý sách</string>
+    <string name="admin_categories">Quản lý danh mục</string>
+    <string name="admin_orders">Quản lý đơn hàng</string>
+    <string name="admin_reports">Báo cáo thống kê</string>
+
+    <!-- Staff Navigation -->
+    <string name="staff_dashboard">Bảng điều khiển</string>
+    <string name="staff_orders">Đơn hàng</string>
+    <string name="staff_inventory">Quản lý kho</string>
+
+    <!-- Common -->
+    <string name="add">Thêm</string>
+    <string name="edit">Sửa</string>
+    <string name="delete">Xóa</string>
+    <string name="save">Lưu</string>
+    <string name="cancel">Hủy</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="filter">Lọc</string>
+    <string name="refresh">Làm mới</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="profile">Thông tin cá nhân</string>
+    <string name="settings">Cài đặt</string>
+
+    <!-- User Management -->
+    <string name="user_name">Tên người dùng</string>
+    <string name="user_email">Email</string>
+    <string name="user_phone">Số điện thoại</string>
+    <string name="user_role">Vai trò</string>
+    <string name="user_status">Trạng thái</string>
+    <string name="add_user">Thêm người dùng</string>
+    <string name="edit_user">Sửa người dùng</string>
+
+    <!-- Book Management -->
+    <string name="book_title">Tên sách</string>
+    <string name="book_author">Tác giả</string>
+    <string name="book_category">Thể loại</string>
+    <string name="book_publisher">Nhà xuất bản</string>
+    <string name="book_price">Giá</string>
+    <string name="book_stock">Số lượng tồn</string>
+    <string name="book_description">Mô tả</string>
+    <string name="book_image">Hình ảnh</string>
+    <string name="add_book">Thêm sách</string>
+    <string name="edit_book">Sửa sách</string>
+
+    <!-- Category Management -->
+    <string name="category_name">Tên danh mục</string>
+    <string name="category_description">Mô tả danh mục</string>
+    <string name="add_category">Thêm danh mục</string>
+    <string name="edit_category">Sửa danh mục</string>
+
+    <!-- Order Management -->
+    <string name="order_id">Mã đơn hàng</string>
+    <string name="order_date">Ngày đặt</string>
+    <string name="order_customer">Khách hàng</string>
+    <string name="order_total">Tổng tiền</string>
+    <string name="order_status">Trạng thái</string>
+    <string name="order_details">Chi tiết đơn hàng</string>
+
+    <!-- Order Status -->
+    <string name="status_pending">Chờ xử lý</string>
+    <string name="status_processing">Đang xử lý</string>
+    <string name="status_shipping">Đang giao</string>
+    <string name="status_delivered">Đã giao</string>
+    <string name="status_cancelled">Đã hủy</string>
+
+    <!-- Reports -->
+    <string name="total_revenue">Tổng doanh thu</string>
+    <string name="total_orders">Tổng đơn hàng</string>
+    <string name="total_customers">Tổng khách hàng</string>
+    <string name="bestselling_books">Sách bán chạy</string>
+    <string name="top_rated_books">Sách đánh giá cao</string>
+
+    <!-- Inventory -->
+    <string name="stock_quantity">Số lượng tồn</string>
+    <string name="low_stock">Sắp hết hàng</string>
+    <string name="out_of_stock">Hết hàng</string>
+    <string name="update_stock">Cập nhật tồn kho</string>
+
+    <!-- Messages -->
+    <string name="success_save">Lưu thành công</string>
+    <string name="success_delete">Xóa thành công</string>
+    <string name="error_save">Lỗi khi lưu</string>
+    <string name="error_delete">Lỗi khi xóa</string>
+    <string name="confirm_delete">Bạn có chắc muốn xóa?</string>
+    <string name="no_data">Không có dữ liệu</string>
+    <string name="loading">Đang tải...</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- Action messages -->
+    <string name="action_refresh">Làm mới</string>
+    <string name="action_sort">Sắp xếp</string>
+    <string name="action_export">Xuất dữ liệu</string>
+
+    <!-- Dialog titles -->
+    <string name="dialog_confirm">Xác nhận</string>
+    <string name="dialog_warning">Cảnh báo</string>
+    <string name="dialog_error">Lỗi</string>
+    <string name="dialog_info">Thông tin</string>
+
+    <!-- Status messages -->
+    <string name="status_loading">Đang tải dữ liệu...</string>
+    <string name="status_saving">Đang lưu...</string>
+    <string name="status_deleting">Đang xóa...</string>
+    <string name="status_updating">Đang cập nhật...</string>
+
+    <!-- Error messages -->
+    <string name="error_network">Lỗi kết nối mạng</string>
+    <string name="error_server">Lỗi máy chủ</string>
+    <string name="error_unknown">Lỗi không xác định</string>
+    <string name="error_validation">Dữ liệu không hợp lệ</string>
+
+    <!-- Empty states -->
+    <string name="empty_users">Chưa có người dùng nào</string>
+    <string name="empty_books">Chưa có sách nào</string>
+    <string name="empty_orders">Chưa có đơn hàng nào</string>
+    <string name="empty_categories">Chưa có danh mục nào</string>
+
+    <!-- Units -->
+    <string name="unit_vnd">VNĐ</string>
+    <string name="unit_books">cuốn</string>
+    <string name="unit_orders">đơn</string>
+    <string name="unit_customers">khách</string>
+
+    <!-- Time -->
+    <string name="today">Hôm nay</string>
+    <string name="yesterday">Hôm qua</string>
+    <string name="this_week">Tuần này</string>
+    <string name="this_month">Tháng này</string>
+
+    <!-- Permissions -->
+    <string name="permission_camera">Quyền truy cập camera</string>
+    <string name="permission_storage">Quyền truy cập bộ nhớ</string>
+    <string name="permission_phone">Quyền gọi điện</string>
+
+    <!-- Contact -->
+    <string name="contact_customer">Liên hệ khách hàng</string>
+    <string name="call_customer">Gọi khách hàng</string>
+    <string name="send_sms">Gửi tin nhắn</string>
+
+    <!-- Stock levels -->
+    <string name="stock_high">Tồn kho cao</string>
+    <string name="stock_medium">Tồn kho trung bình</string>
+    <string name="stock_critical">Tồn kho nguy hiểm</string>
+
+    <!-- Reports -->
+    <string name="report_daily">Báo cáo ngày</string>
+    <string name="report_weekly">Báo cáo tuần</string>
+    <string name="report_monthly">Báo cáo tháng</string>
+    <string name="report_yearly">Báo cáo năm</string>
 </resources>

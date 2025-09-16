@@ -22,4 +22,34 @@
     <color name="success_color">#4CAF50</color>
     <color name="error_color">#F44336</color>
     <color name="warning_color">#FF9800</color>
+    <color name="colorPrimary">#1976D2</color>
+    <color name="colorPrimaryDark">#1565C0</color>
+    <color name="colorAccent">#FF5722</color>
+
+    <!-- Background Colors -->
+    <color name="colorBackground">#F5F5F5</color>
+    <color name="colorSurface">#FFFFFF</color>
+
+    <!-- Text Colors -->
+    <color name="colorTextPrimary">#212121</color>
+    <color name="colorTextSecondary">#757575</color>
+    <color name="colorTextHint">#9E9E9E</color>
+
+    <!-- Status Colors -->
+    <color name="colorSuccess">#4CAF50</color>
+    <color name="colorWarning">#FF9800</color>
+    <color name="colorError">#F44336</color>
+    <color name="colorInfo">#2196F3</color>
+
+    <!-- Order Status Colors -->
+    <color name="statusPending">#FF9800</color>
+    <color name="statusProcessing">#2196F3</color>
+    <color name="statusDelivered">#4CAF50</color>
+    <color name="statusCancelled">#F44336</color>
+
+    <!-- Common Colors -->
+    <color name="transparent">#00000000</color>
+    <color name="gray_light">#E0E0E0</color>
+    <color name="gray_medium">#9E9E9E</color>
+    <color name="gray_dark">#424242</color>
 </resources>

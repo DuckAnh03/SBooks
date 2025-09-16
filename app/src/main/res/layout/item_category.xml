@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/spacing_tiny"
+    app:cardCornerRadius="@dimen/card_radius"
+    app:cardElevation="2dp"
+    android:foreground="@drawable/ripple_effect">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/card_padding">
+
+        <!-- Category Icon -->
+        <ImageView
+            android:id="@+id/iv_category_icon"
+            android:layout_width="@dimen/icon_size_large"
+            android:layout_height="@dimen/icon_size_large"
+            android:layout_marginEnd="@dimen/spacing_medium"
+            android:background="@drawable/bg_circle"
+            android:src="@drawable/ic_category"
+            android:padding="@dimen/spacing_small" />
+
+        <!-- Category Info -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_category_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Văn học"
+                android:textSize="@dimen/text_size_normal"
+                android:textStyle="bold"
+                android:textColor="@color/colorTextPrimary" />
+
+            <TextView
+                android:id="@+id/tv_category_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_tiny"
+                android:text="Các tác phẩm văn học trong và ngoài nước"
+                android:textSize="@dimen/text_size_small"
+                android:textColor="@color/colorTextSecondary"
+                android:maxLines="2"
+                android:ellipsize="end" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_book_count"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="125 cuốn sách"
+                    android:textSize="@dimen/text_size_small"
+                    android:textColor="@color/colorInfo"
+                    android:drawableStart="@drawable/ic_book"
+                    android:drawablePadding="@dimen/spacing_tiny"
+                    android:gravity="center_vertical" />
+
+                <TextView
+                    android:id="@+id/tv_category_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Đang hoạt động"
+                    android:textSize="@dimen/text_size_tiny"
+                    android:textColor="@color/white"
+                    android:background="@drawable/bg_status_active"
+                    android:paddingHorizontal="@dimen/spacing_small"
+                    android:paddingVertical="@dimen/spacing_tiny" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/btn_edit_category"
+                android:layout_width="@dimen/icon_size_medium"
+                android:layout_height="@dimen/icon_size_medium"
+                android:layout_marginBottom="@dimen/spacing_small"
+                android:background="@drawable/bg_button_icon"
+                android:src="@drawable/ic_edit"
+                android:contentDescription="@string/edit" />
+
+            <ImageButton
+                android:id="@+id/btn_delete_category"
+                android:layout_width="@dimen/icon_size_medium"
+                android:layout_height="@dimen/icon_size_medium"
+                android:background="@drawable/bg_button_icon_danger"
+                android:src="@drawable/ic_delete"
+                android:contentDescription="@string/delete" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

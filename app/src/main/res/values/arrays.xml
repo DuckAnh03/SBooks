@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- User Roles -->
+    <string-array name="user_roles">
+        <item>Tất cả vai trò</item>
+        <item>Quản trị viên</item>
+        <item>Nhân viên</item>
+        <item>Khách hàng</item>
+    </string-array>
+
+    <string-array name="user_roles_dialog">
+        <item>Quản trị viên</item>
+        <item>Nhân viên</item>
+        <item>Khách hàng</item>
+    </string-array>
+
+    <!-- Order Status -->
+    <string-array name="order_status">
+        <item>Tất cả trạng thái</item>
+        <item>Chờ xử lý</item>
+        <item>Đang xử lý</item>
+        <item>Đang giao</item>
+        <item>Đã giao</item>
+        <item>Đã hủy</item>
+    </string-array>
+
+    <!-- Book Categories -->
+    <string-array name="book_categories">
+        <item>Tất cả thể loại</item>
+        <item>Văn học</item>
+        <item>Khoa học</item>
+        <item>Lịch sử</item>
+        <item>Kinh tế</item>
+        <item>Công nghệ</item>
+        <item>Giáo dục</item>
+        <item>Tâm lý</item>
+        <item>Y học</item>
+        <item>Nghệ thuật</item>
+        <item>Thể thao</item>
+    </string-array>
+
+    <!-- Sort Options -->
+    <string-array name="sort_options_books">
+        <item>Sắp xếp theo tên A-Z</item>
+        <item>Sắp xếp theo tên Z-A</item>
+        <item>Giá thấp đến cao</item>
+        <item>Giá cao đến thấp</item>
+        <item>Tồn kho thấp đến cao</item>
+        <item>Mới nhất</item>
+    </string-array>
+
+    <!-- Stock Filter Options -->
+    <string-array name="stock_filter_options">
+        <item>Tất cả sản phẩm</item>
+        <item>Còn hàng</item>
+        <item>Sắp hết hàng</item>
+        <item>Hết hàng</item>
+    </string-array>
+
+    <!-- Order Status for Staff -->
+    <string-array name="staff_order_status">
+        <item>Tất cả</item>
+        <item>Chờ xử lý</item>
+        <item>Đang xử lý</item>
+        <item>Hoàn thành</item>
+    </string-array>
+</resources>

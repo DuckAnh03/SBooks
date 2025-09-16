@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/admin_navigation"
+    app:startDestination="@id/nav_admin_dashboard">
+
+    <fragment
+        android:id="@+id/nav_admin_dashboard"
+        android:name="com.example.sbooks.fragments.admin.AdminDashboardFragment"
+        android:label="@string/admin_dashboard"
+        tools:layout="@layout/fragment_admin_dashboard" />
+
+    <fragment
+        android:id="@+id/nav_admin_users"
+        android:name="com.example.sbooks.fragments.admin.UserManagementFragment"
+        android:label="@string/admin_users"
+        tools:layout="@layout/fragment_user_management" />
+
+    <fragment
+        android:id="@+id/nav_admin_books"
+        android:name="com.example.sbooks.fragments.admin.BookManagementFragment"
+        android:label="@string/admin_books"
+        tools:layout="@layout/fragment_book_management" />
+
+    <fragment
+        android:id="@+id/nav_admin_categories"
+        android:name="com.example.sbooks.fragments.admin.CategoryManagementFragment"
+        android:label="@string/admin_categories"
+        tools:layout="@layout/fragment_category_management" />
+
+    <fragment
+        android:id="@+id/nav_admin_orders"
+        android:name="com.example.sbooks.fragments.admin.OrderManagementFragment"
+        android:label="@string/admin_orders"
+        tools:layout="@layout/fragment_order_management" />
+
+    <fragment
+        android:id="@+id/nav_admin_reports"
+        android:name="com.example.sbooks.fragments.admin.ReportFragment"
+        android:label="@string/admin_reports"
+        tools:layout="@layout/fragment_report" />
+
+</navigation>
