@@ -4,7 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.sbooks.activities.admin.AdminMainActivity
 import com.example.sbooks.databinding.ActivityLoginBinding
+import com.example.sbooks.fragments.admin.AdminDashboardFragment
 
 class LoginActivity : AppCompatActivity() {
 
@@ -17,29 +19,33 @@ class LoginActivity : AppCompatActivity() {
 
         // Xử lý nút Đăng nhập
         binding.btnLogin.setOnClickListener {
-            val username = binding.etUsername.text.toString()
-            val password = binding.etPassword.text.toString()
-
-            if (username.isEmpty() || password.isEmpty()) {
-                binding.tvError.text = "Vui lòng nhập đầy đủ thông tin"
-                binding.tvError.visibility = android.view.View.VISIBLE
-            } else {
-                // Kiểm tra dữ liệu tạm thời
-                if (username == "admin" && password == "1234") {
-                    binding.tvError.visibility = android.view.View.GONE
-
-                    // Tạo Intent để chuyển sang HomeActivity
-                    val intent = Intent(this, HomeActivity::class.java)
-                    startActivity(intent)
-
-                    // Kết thúc LoginActivity để bấm back không quay lại
-                    finish()
-                } else {
-                    binding.tvError.text = "Tên đăng nhập hoặc mật khẩu không đúng"
-                    binding.tvError.visibility = android.view.View.VISIBLE
-                }
-            }
+            val intent = Intent(this, AdminMainActivity::class.java)
+            startActivity(intent)
+            finish() // nếu muốn khi bấm back không quay lại màn login
         }
+//            val username = binding.etUsername.text.toString()
+//            val password = binding.etPassword.text.toString()
+//
+//            if (username.isEmpty() || password.isEmpty()) {
+//                binding.tvError.text = "Vui lòng nhập đầy đủ thông tin"
+//                binding.tvError.visibility = android.view.View.VISIBLE
+//            } else {
+//                // Kiểm tra dữ liệu tạm thời
+//                if (username == "admin" && password == "1234") {
+//                    binding.tvError.visibility = android.view.View.GONE
+//
+//                    // Tạo Intent để chuyển sang HomeActivity
+//                    val intent = Intent(this, HomeActivity::class.java)
+//                    startActivity(intent)
+//
+//                    // Kết thúc LoginActivity để bấm back không quay lại
+//                    finish()
+//                } else {
+//                    binding.tvError.text = "Tên đăng nhập hoặc mật khẩu không đúng"
+//                    binding.tvError.visibility = android.view.View.VISIBLE
+//                }
+//            }
+
 
         // Xử lý nút Đăng ký (chưa triển khai)
         binding.btnRegister.setOnClickListener {
