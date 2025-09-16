@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/cat_ai" android:title="AI" />
+    <item android:id="@+id/cat_science" android:title="Khoa học" />
+    <item android:id="@+id/cat_psychology" android:title="Tâm lý" />
+    <item android:id="@+id/cat_marketing" android:title="Marketing" />
+    <item android:id="@+id/cat_history" android:title="Lịch sử" />
+</menu>

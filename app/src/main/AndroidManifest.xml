@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SBooks">
         <activity
+            android:name=".PaymentActivity"
+            android:exported="false" />
+        <activity
             android:name=".HomeActivity"
             android:exported="true">
             <intent-filter>
@@ -21,9 +24,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity_home"
+            android:name=".LoginActivity"
             android:exported="false"
-            android:label="@string/title_activity_home"
             android:theme="@style/Theme.SBooks" />
         <activity
             android:name=".MainActivity"

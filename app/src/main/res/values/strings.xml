@@ -11,8 +11,9 @@
     <string name="search_hint">Tìm kiếm sản phẩm&#8230;</string>
 
     <!-- Nav Menu -->
-    <string name="nav_cart_title">Giỏ hàng</string>
     <string name="nav_home_title">Trang chủ</string>
+    <string name="nav_cart_title">Giỏ hàng</string>
+    <string name="nav_order_title">Đơn hàng</string>
     <string name="nav_account_title">Tài khoản</string>
 
     <!-- Sách -->
