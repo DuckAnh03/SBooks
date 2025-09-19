@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_large">
+
+        <TextView
+            android:id="@+id/tv_dialog_order_detail_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chi tiết đơn hàng"
+            android:textSize="@dimen/text_size_xlarge"
+            android:textStyle="bold"
+            android:textColor="@color/colorTextPrimary"
+            android:layout_marginBottom="@dimen/spacing_medium"
+            android:gravity="center_horizontal"/>
+
+        <!-- Order Information Section -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_medium"
+            app:cardCornerRadius="@dimen/card_radius"
+            app:cardElevation="@dimen/card_elevation_low">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/card_padding">
+
+                <TextView
+                    style="@style/OrderDetailSectionTitle"
+                    android:text="Thông tin đơn hàng"/>
+
+                <LinearLayout style="@style/OrderDetailRow">
+                    <TextView style="@style/OrderDetailLabel" android:text="Mã đơn hàng:"/>
+                    <TextView style="@style/OrderDetailValue" android:id="@+id/tv_detail_order_code"/>
+                </LinearLayout>
+
+                <LinearLayout style="@style/OrderDetailRow">
+                    <TextView style="@style/OrderDetailLabel" android:text="Ngày đặt:"/>
+                    <TextView style="@style/OrderDetailValue" android:id="@+id/tv_detail_order_date"/>
+                </LinearLayout>
+
+                <LinearLayout style="@style/OrderDetailRow">
+                    <TextView style="@style/OrderDetailLabel" android:text="Trạng thái:"/>
+                    <TextView style="@style/OrderDetailValue" android:id="@+id/tv_detail_order_status"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <LinearLayout style="@style/OrderDetailRow">
+                    <TextView style="@style/OrderDetailLabel" android:text="Tổng tiền:"/>
+                    <TextView style="@style/OrderDetailValue" android:id="@+id/tv_detail_order_total"
+                        android:textColor="@color/colorAccent" android:textStyle="bold"/>
+                </LinearLayout>
+
+                <LinearLayout style="@style/OrderDetailRow" android:id="@+id/layout_detail_staff_info">
+                    <TextView style="@style/OrderDetailLabel" android:text="Nhân viên xử lý:"/>
+                    <TextView style="@style/OrderDetailValue" android:id="@+id/tv_detail_staff_name"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Customer Information Section -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_medium"
+            app:cardCornerRadius="@dimen/card_radius"
+            app:cardElevation="@dimen/card_elevation_low">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/card_padding">
+
+                <TextView
+                    style="@style/OrderDetailSectionTitle"
+                    android:text="Thông tin khách hàng"/>
+
+                <LinearLayout style="@style/OrderDetailRow">
+                    <TextView style="@style/OrderDetailLabel" android:text="Tên khách hàng:"/>
+                    <TextView style="@style/OrderDetailValue" android:id="@+id/tv_detail_customer_name"/>
+                </LinearLayout>
+
+                <LinearLayout style="@style/OrderDetailRow">
+                    <TextView style="@style/OrderDetailLabel" android:text="Số điện thoại:"/>
+                    <TextView style="@style/OrderDetailValue" android:id="@+id/tv_detail_customer_phone"/>
+                </LinearLayout>
+
+                <LinearLayout style="@style/OrderDetailRow">
+                    <TextView style="@style/OrderDetailLabel" android:text="Địa chỉ giao hàng:"/>
+                    <TextView style="@style/OrderDetailValue" android:id="@+id/tv_detail_customer_address"/>
+                </LinearLayout>
+
+                <LinearLayout style="@style/OrderDetailRow">
+                    <TextView style="@style/OrderDetailLabel" android:text="Ghi chú:"/>
+                    <TextView style="@style/OrderDetailValue" android:id="@+id/tv_detail_order_notes"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Order Items Section -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_medium"
+            app:cardCornerRadius="@dimen/card_radius"
+            app:cardElevation="@dimen/card_elevation_low">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/card_padding">
+
+                <TextView
+                    style="@style/OrderDetailSectionTitle"
+                    android:text="Danh sách sản phẩm"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_detail_order_items"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxHeight="200dp"
+                    tools:listitem="@layout/item_order_detail_product"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/spacing_small">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Tổng số lượng:"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_size_small"
+                        android:textColor="@color/colorTextSecondary"/>
+                    <TextView
+                        android:id="@+id/tv_detail_total_quantity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="3"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_size_small"
+                        android:textColor="@color/colorTextPrimary"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/btn_detail_close_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đóng"
+            style="@style/ButtonPrimary"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/spacing_medium"/>
+
+    </LinearLayout>
+</ScrollView>

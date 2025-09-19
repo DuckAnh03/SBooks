@@ -1,94 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp"
+    android:background="@color/colorBackground"
     android:gravity="center"
-    android:background="@color/background_color">
+    android:padding="@dimen/spacing_large">
 
+    <!-- Logo Section -->
     <ImageView
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:src="@drawable/ic_book_24"
-        android:layout_marginBottom="32dp"
-        android:contentDescription="StarBooks Logo" />
+        android:layout_marginBottom="@dimen/spacing_large"
+        android:src="@mipmap/ic_launcher"
+        android:contentDescription="@string/app_name" />
 
+    <!-- App Title -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="StarBooks"
-        android:textSize="32sp"
+        android:text="@string/app_name"
+        android:textSize="@dimen/text_size_large"
         android:textStyle="bold"
-        android:textColor="@color/primary_color"
-        android:layout_marginBottom="8dp" />
+        android:textColor="@color/colorPrimary"
+        android:layout_marginBottom="@dimen/spacing_small" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hệ thống quản lý bán sách"
-        android:textSize="16sp"
-        android:textColor="@color/secondary_text_color"
-        android:layout_marginBottom="48dp" />
+        android:text="@string/login_title"
+        android:textSize="@dimen/text_size_medium"
+        android:textColor="@color/colorTextSecondary"
+        android:layout_marginBottom="@dimen/spacing_xlarge" />
 
-    <com.google.android.material.textfield.TextInputLayout
+    <!-- Login Form Card -->
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:boxStrokeColor="@color/primary_color"
-        app:hintTextColor="@color/primary_color">
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="@dimen/card_elevation"
+        android:layout_marginBottom="@dimen/spacing_large">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etUsername"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Tên đăng nhập"
-            android:inputType="text"
-            android:maxLines="1" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_large">
 
-    <com.google.android.material.textfield.TextInputLayout
+            <!-- Username Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_medium"
+                app:hintEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/username"
+                    android:inputType="text"
+                    android:drawableStart="@drawable/ic_users"
+                    android:drawablePadding="@dimen/spacing_medium" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Password Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_large"
+                app:hintEnabled="true"
+                app:passwordToggleEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/password"
+                    android:inputType="textPassword"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:drawablePadding="@dimen/spacing_medium" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Login Button -->
+            <Button
+                android:id="@+id/btn_login"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height"
+                android:text="@string/login"
+                android:textSize="@dimen/text_size_normal"
+                android:textStyle="bold"
+                style="@style/ButtonPrimary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRegister"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Đăng ký tài khoản"
+                android:textSize="16sp"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Demo Accounts Info -->
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        app:boxStrokeColor="@color/primary_color"
-        app:hintTextColor="@color/primary_color"
-        app:passwordToggleEnabled="true">
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="2dp"
+        android:backgroundTint="@color/colorInfo"
+        android:alpha="0.9">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etPassword"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Mật khẩu"
-            android:inputType="textPassword"
-            android:maxLines="1" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_medium">
 
-    <TextView
-        android:id="@+id/tvError"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/error_color"
-        android:textSize="14sp"
-        android:visibility="gone"
-        android:layout_marginBottom="16dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tài khoản demo:"
+                android:textSize="@dimen/text_size_small"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:layout_marginBottom="@dimen/spacing_small" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnLogin"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Đăng nhập"
-        android:textSize="16sp"
-        android:layout_marginBottom="16dp"
-        app:cornerRadius="8dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="👨‍💼 Admin: admin / admin123"
+                android:textSize="@dimen/text_size_small"
+                android:textColor="@color/white"
+                android:layout_marginBottom="@dimen/spacing_tiny" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnRegister"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Đăng ký tài khoản"
-        android:textSize="16sp"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        app:cornerRadius="8dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="👨‍🔧 Staff: staff / staff123"
+                android:textSize="@dimen/text_size_small"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
 </LinearLayout>
+

@@ -55,4 +55,10 @@
     <dimen name="border_width_thin">1dp</dimen>
     <dimen name="border_width_medium">2dp</dimen>
     <dimen name="border_width_thick">4dp</dimen>
+
+    <dimen name="text_size_xlarge">24sp</dimen>
+    <dimen name="card_elevation_low">2dp</dimen>
+
+
+
 </resources>
