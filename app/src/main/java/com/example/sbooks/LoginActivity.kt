@@ -142,6 +142,7 @@ class LoginActivity : AppCompatActivity() {
                 sharedPrefs.saveUserSession(user.id, user.username, user.role.value)
                 sharedPrefs.saveString("full_name", user.fullName)
                 sharedPrefs.saveString("email", user.email)
+                sharedPrefs.saveString("avatar", user.avatar)
 
                 DialogUtils.showToast(this, Constants.SUCCESS_LOGIN)
                 if (!isFinishing) {

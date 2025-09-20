@@ -10,6 +10,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -20,6 +21,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.example.sbooks.R
 import com.example.sbooks.LoginActivity
+import com.example.sbooks.fragments.admin.UserManagementFragment
 import com.example.sbooks.utils.Constants
 import com.example.sbooks.utils.DialogUtils
 import com.example.sbooks.utils.SharedPrefsHelper
@@ -181,10 +183,40 @@ class AdminMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             if (headerView != null) {
                 val tvAdminName = headerView.findViewById<android.widget.TextView>(R.id.tv_admin_name)
                 val tvAdminEmail = headerView.findViewById<android.widget.TextView>(R.id.tv_admin_email)
+                val ivAdminAvatar = headerView.findViewById<com.example.sbooks.utils.CircleImageView>(R.id.iv_admin_avatar)
+                val statusIndicator = headerView.findViewById<android.view.View>(R.id.status_indicator)
 
                 if (tvAdminName != null && tvAdminEmail != null) {
-                    tvAdminName.text = sharedPrefs.getString("full_name", "Administrator")
-                    tvAdminEmail.text = sharedPrefs.getString("email", "admin@sbooks.com")
+                    val fullName = sharedPrefs.getString("full_name", "Administrator")
+                    val email = sharedPrefs.getString("email", "admin@sbooks.com")
+
+                    tvAdminName.text = fullName
+                    tvAdminEmail.text = email
+
+                    // Load admin avatar if available
+                    ivAdminAvatar?.let { avatarView ->
+                        val avatarPath = sharedPrefs.getString("avatar", "")
+                        if (avatarPath.isNotEmpty()) {
+                            val bitmap = com.example.sbooks.utils.ImageUtils.loadImageFromInternalStorage(avatarPath)
+                            if (bitmap != null) {
+                                avatarView.setImageBitmap(bitmap)
+                                Log.d(TAG, "Loaded admin avatar from: $avatarPath")
+                            } else {
+                                avatarView.setImageResource(com.example.sbooks.R.drawable.ic_users)
+                                Log.w(TAG, "Failed to load admin avatar from: $avatarPath")
+                            }
+                        } else {
+                            avatarView.setImageResource(com.example.sbooks.R.drawable.ic_users)
+                            Log.d(TAG, "No admin avatar path found, using default")
+                        }
+
+                        // Set border color based on admin role
+                        avatarView.setBorderColor(getColor(com.example.sbooks.R.color.error_color))
+                    }
+
+                    // Show online status indicator
+                    statusIndicator?.visibility = android.view.View.VISIBLE
+
                 } else {
                     Log.w(TAG, "setupNavigationHeader: Header text views not found")
                 }
@@ -335,8 +367,22 @@ class AdminMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
     private fun handleFabClick() {
         val currentDestId = navController?.currentDestination?.id
+        Log.d(TAG, "handleFabClick: Current destination ID: $currentDestId")
+
         when (currentDestId) {
-            R.id.nav_admin_users -> showAddUserDialog()
+            R.id.nav_admin_users -> {
+                // Get the current fragment and call showAddUserDialog
+                val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
+                val currentFragment = navHostFragment?.childFragmentManager?.fragments?.get(0)
+
+                if (currentFragment is UserManagementFragment) {
+                    Log.d(TAG, "Calling showAddUserDialog on UserManagementFragment")
+                    currentFragment.showAddUserDialog()
+                } else {
+                    Log.w(TAG, "Current fragment is not UserManagementFragment: ${currentFragment?.javaClass?.simpleName}")
+                    DialogUtils.showToast(this, "Thêm người dùng")
+                }
+            }
             R.id.nav_admin_books -> showAddBookDialog()
             R.id.nav_admin_categories -> showAddCategoryDialog()
             else -> {
@@ -344,10 +390,6 @@ class AdminMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 fab.hide()
             }
         }
-    }
-
-    private fun showAddUserDialog() {
-        DialogUtils.showToast(this, "Thêm người dùng")
     }
 
     private fun showAddBookDialog() {

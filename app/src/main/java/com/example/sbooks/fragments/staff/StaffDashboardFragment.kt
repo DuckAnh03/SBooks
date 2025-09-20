@@ -1,4 +1,3 @@
-// StaffDashboardFragment.kt
 package com.example.sbooks.fragments.staff
 
 import android.os.Bundle
@@ -27,7 +26,7 @@ class StaffDashboardFragment : Fragment() {
         private const val TAG = "StaffDashboardFragment"
     }
 
-    // Views - nullable to handle missing views gracefully
+    // Views
     private var tvAssignedOrders: TextView? = null
     private var tvLowStockItems: TextView? = null
     private var btnViewOrders: Button? = null
@@ -47,7 +46,6 @@ class StaffDashboardFragment : Fragment() {
             inflater.inflate(R.layout.fragment_staff_dashboard, container, false)
         } catch (e: Exception) {
             Log.e(TAG, "Error inflating layout, creating fallback view", e)
-            // Create a simple fallback view
             createFallbackView()
         }
     }
@@ -99,7 +97,6 @@ class StaffDashboardFragment : Fragment() {
             } ?: throw Exception("View is null")
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing views: ${e.message}")
-            // Set default behavior for missing views
             showError("Một số thành phần giao diện không tải được")
         }
     }
@@ -219,12 +216,26 @@ class StaffDashboardFragment : Fragment() {
 
     private fun processOrder(order: OrderModel) {
         try {
+            val nextStatus = when (order.status) {
+                OrderModel.OrderStatus.PENDING -> OrderModel.OrderStatus.PROCESSING
+                OrderModel.OrderStatus.PROCESSING -> OrderModel.OrderStatus.SHIPPING
+                OrderModel.OrderStatus.SHIPPING -> OrderModel.OrderStatus.DELIVERED
+                else -> return
+            }
+
+            val actionText = when (nextStatus) {
+                OrderModel.OrderStatus.PROCESSING -> "bắt đầu xử lý"
+                OrderModel.OrderStatus.SHIPPING -> "chuyển sang giao hàng"
+                OrderModel.OrderStatus.DELIVERED -> "xác nhận đã giao"
+                else -> "cập nhật"
+            }
+
             DialogUtils.showConfirmDialog(
                 requireContext(),
                 "Xác nhận xử lý",
-                "Bạn có muốn bắt đầu xử lý đơn hàng ${order.orderCode}?",
+                "Bạn có muốn $actionText đơn hàng ${order.orderCode}?",
                 positiveAction = {
-                    updateOrderStatus(order, OrderModel.OrderStatus.PROCESSING)
+                    updateOrderStatus(order, nextStatus)
                 }
             )
         } catch (e: Exception) {
@@ -275,7 +286,6 @@ class StaffDashboardFragment : Fragment() {
         }
     }
 
-    // Helper methods for user feedback
     private fun showError(message: String) {
         try {
             if (isAdded && context != null) {
@@ -296,7 +306,6 @@ class StaffDashboardFragment : Fragment() {
         }
     }
 
-    // Lifecycle management
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume - refreshing data")
@@ -310,7 +319,6 @@ class StaffDashboardFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         Log.d(TAG, "onDestroyView")
-        // Clear references to prevent memory leaks
         tvAssignedOrders = null
         tvLowStockItems = null
         btnViewOrders = null

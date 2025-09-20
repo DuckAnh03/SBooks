@@ -91,13 +91,17 @@ class BookManagementFragment : Fragment() {
 
     private fun setupSpinners() {
         // Category spinner
-        val categories = resources.getStringArray(R.array.book_categories)
-        val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerBookCategory.adapter = categoryAdapter
+        try {
+            val categories = listOf("Tất cả thể loại") + categoryDao.getActiveCategories().map { it.name }
+            val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
+            categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinnerBookCategory.adapter = categoryAdapter
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting up category spinner", e)
+        }
 
         // Sort spinner
-        val sortOptions = resources.getStringArray(R.array.sort_options_books)
+        val sortOptions = arrayOf("Tên A-Z", "Tên Z-A", "Giá thấp đến cao", "Giá cao đến thấp", "Tồn kho thấp", "Mới nhất")
         val sortAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, sortOptions)
         sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerSortBy.adapter = sortAdapter
@@ -135,6 +139,7 @@ class BookManagementFragment : Fragment() {
             bookList.clear()
             bookList.addAll(bookDao.getAllBooks())
             updateUI()
+            Log.d(TAG, "Loaded ${bookList.size} books")
         } catch (e: Exception) {
             Log.e(TAG, "Error loading books", e)
         }
@@ -192,19 +197,20 @@ class BookManagementFragment : Fragment() {
         dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
         val tvDialogTitle = dialog.findViewById<TextView>(R.id.tv_dialog_title)
-        val etBookTitle = dialog.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.et_book_title)
-        val etBookAuthor = dialog.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.et_book_author)
-        val etBookPublisher = dialog.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.et_book_publisher)
-        val etBookPrice = dialog.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.et_book_price)
-        val etBookStock = dialog.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.et_book_stock)
-        val etBookDescription = dialog.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.et_book_description)
+        val etBookTitle = dialog.findViewById<EditText>(R.id.et_book_title)
+        val etBookAuthor = dialog.findViewById<EditText>(R.id.et_book_author)
+        val etBookPublisher = dialog.findViewById<EditText>(R.id.et_book_publisher)
+        val etBookPrice = dialog.findViewById<EditText>(R.id.et_book_price)
+        val etBookStock = dialog.findViewById<EditText>(R.id.et_book_stock)
+        val etBookDescription = dialog.findViewById<EditText>(R.id.et_book_description)
         val spinnerCategory = dialog.findViewById<Spinner>(R.id.spinner_book_category_dialog)
         val btnCancel = dialog.findViewById<Button>(R.id.btn_cancel)
         val btnSave = dialog.findViewById<Button>(R.id.btn_save)
 
         // Setup category spinner
-        val categories = listOf("Văn học", "Khoa học", "Lịch sử", "Kinh tế", "Giáo dục")
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
+        val categories = categoryDao.getActiveCategories()
+        val categoryNames = categories.map { it.name }
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categoryNames)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerCategory.adapter = adapter
 
@@ -216,6 +222,12 @@ class BookManagementFragment : Fragment() {
         etBookPrice.setText(book.price.toString())
         etBookStock.setText(book.stock.toString())
         etBookDescription.setText(book.description)
+
+        // Set selected category
+        val categoryIndex = categories.indexOfFirst { it.id == book.categoryId }
+        if (categoryIndex >= 0) {
+            spinnerCategory.setSelection(categoryIndex)
+        }
 
         btnCancel.setOnClickListener { dialog.dismiss() }
         btnSave.setOnClickListener {
@@ -233,10 +245,16 @@ class BookManagementFragment : Fragment() {
                 return@setOnClickListener
             }
 
+            val selectedCategory = if (categories.isNotEmpty() && spinnerCategory.selectedItemPosition >= 0) {
+                categories[spinnerCategory.selectedItemPosition]
+            } else null
+
             val updatedBook = book.copy(
                 title = title,
                 author = author,
                 publisher = publisher,
+                categoryId = selectedCategory?.id ?: book.categoryId,
+                categoryName = selectedCategory?.name ?: book.categoryName,
                 price = priceStr.toDouble(),
                 stock = stockStr.toInt(),
                 description = description
@@ -298,5 +316,10 @@ class BookManagementFragment : Fragment() {
         }
 
         DialogUtils.showInfoDialog(requireContext(), "Chi tiết sách", message)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadBooks()
     }
 }

@@ -7,8 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/spacing_tiny"
     app:cardCornerRadius="@dimen/card_radius"
-    app:cardElevation="2dp"
-    android:foreground="@drawable/ripple_effect">
+    app:cardElevation="2dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,15 +15,16 @@
         android:orientation="horizontal"
         android:padding="@dimen/card_padding">
 
-        <!-- User Avatar -->
-        <ImageView
+        <!-- User Avatar - Now using CircleImageView -->
+        <com.example.sbooks.utils.CircleImageView
             android:id="@+id/iv_user_avatar"
-            android:layout_width="@dimen/icon_size_large"
-            android:layout_height="@dimen/icon_size_large"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_marginEnd="@dimen/spacing_medium"
-            android:background="@drawable/bg_circle"
-            android:src="@drawable/ic_users"
-            android:padding="@dimen/spacing_small" />
+            app:border_width="2dp"
+            app:border_color="@color/colorPrimary"
+            app:background_color="@color/gray_light"
+            android:src="@drawable/ic_users" />
 
         <!-- User Info -->
         <LinearLayout
@@ -95,15 +95,15 @@
                 android:layout_width="@dimen/icon_size_medium"
                 android:layout_height="@dimen/icon_size_medium"
                 android:layout_marginBottom="@dimen/spacing_small"
-                android:background="@drawable/bg_button_icon"
-                android:src="@drawable/ic_edit"
-                android:contentDescription="@string/edit" />
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/edit"
+                android:src="@drawable/ic_edit" />
 
             <ImageButton
                 android:id="@+id/btn_delete_user"
                 android:layout_width="@dimen/icon_size_medium"
                 android:layout_height="@dimen/icon_size_medium"
-                android:background="@drawable/bg_button_icon_danger"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_delete"
                 android:contentDescription="@string/delete" />
 

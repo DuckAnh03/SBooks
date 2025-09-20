@@ -13,6 +13,14 @@ object Constants {
     const val KEY_IS_LOGGED_IN = "is_logged_in"
     const val KEY_REMEMBER_LOGIN = "remember_login"
 
+    // User Session Keys
+    const val PREF_USER_ID = "user_id"
+    const val PREF_USERNAME = "username"
+    const val PREF_EMAIL = "email"
+    const val PREF_FULL_NAME = "full_name"
+    const val PREF_ROLE = "role"
+    const val PREF_IS_LOGGED_IN = "is_logged_in"
+
     // Request codes
     const val REQUEST_CODE_PICK_IMAGE = 1001
     const val REQUEST_CODE_CAMERA = 1002
@@ -84,4 +92,64 @@ object Constants {
     const val SUCCESS_UPDATE = "Cập nhật thành công"
     const val SUCCESS_LOGIN = "Đăng nhập thành công"
     const val SUCCESS_LOGOUT = "Đăng xuất thành công"
+
+    // App Constants
+    const val APP_NAME = "SBooks"
+    const val SHARED_PREFS_NAME = "SBooksPrefs"
+
+    // Messages
+
+
+    const val SUCCESS_REGISTER = "Đăng ký thành công"
+    const val ERROR_LOGIN_FAILED = "Đăng nhập thất bại"
+    const val ERROR_INVALID_CREDENTIALS = "Tên đăng nhập hoặc mật khẩu không đúng"
+    const val ERROR_USER_EXISTS = "Người dùng đã tồn tại"
+
+
+    // Validation
+
+    const val MIN_USERNAME_LENGTH = 3
+
+    // Image handling
+    const val MAX_IMAGE_SIZE = 2 * 1024 * 1024 // 2MB
+    const val IMAGE_QUALITY = 80
+    const val MAX_IMAGE_WIDTH = 800
+    const val MAX_IMAGE_HEIGHT = 600
+
+    // Database
+
+    // Request codes
+
+    const val REQUEST_CODE_GALLERY = 101
+
+    // User roles
+    const val ROLE_ADMIN = "admin"
+    const val ROLE_STAFF = "staff"
+    const val ROLE_CUSTOMER = "customer"
+
+    // User status
+    const val STATUS_ACTIVE = "active"
+    const val STATUS_INACTIVE = "inactive"
+    const val STATUS_SUSPENDED = "suspended"
+
+    // Order status
+    const val ORDER_STATUS_PENDING = "pending"
+    const val ORDER_STATUS_CONFIRMED = "confirmed"
+    const val ORDER_STATUS_PROCESSING = "processing"
+    const val ORDER_STATUS_SHIPPING = "shipping"
+    const val ORDER_STATUS_DELIVERED = "delivered"
+    const val ORDER_STATUS_CANCELLED = "cancelled"
+
+    // Payment methods
+    const val PAYMENT_COD = "cod"
+    const val PAYMENT_BANK_TRANSFER = "bank_transfer"
+    const val PAYMENT_MOMO = "momo"
+    const val PAYMENT_ZALOPAY = "zalopay"
+
+    // Currency
+    const val CURRENCY_SYMBOL = "₫"
+
+    // Date formats
+    const val DATE_FORMAT_DATABASE = "yyyy-MM-dd HH:mm:ss"
+    const val TIME_FORMAT_DISPLAY = "HH:mm"
 }
