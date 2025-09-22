@@ -6,7 +6,7 @@ data class UserModel(
     val phone: String = "",
     val fullName: String = "",
     val address: String = "",
-    val password: String = "",
+    var password: String = "",
     val role: UserRole = UserRole.CUSTOMER,
     val status: UserStatus = UserStatus.ACTIVE,
     val avatar: String = "",

@@ -382,6 +382,7 @@ class UserManagementFragment : Fragment() {
                     try {
                         val result = userDao.updateUser(updatedUser)
                         if (result > 0) {
+                            user.password = newPassword
                             DialogUtils.showToast(requireContext(), "Đổi mật khẩu thành công")
                             dialog.dismiss()
                         } else {

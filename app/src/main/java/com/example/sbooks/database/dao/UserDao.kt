@@ -30,6 +30,7 @@ class UserDao(private val db: SQLiteDatabase) {
             put("full_name", user.fullName)
             put("address", user.address)
             put("role", user.role.value)
+            put("password", user.password)
             put("status", user.status.value)
             put("avatar", user.avatar)
             put("updated_at", "datetime('now')")

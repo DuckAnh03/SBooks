@@ -383,6 +383,7 @@ class AdminMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                     DialogUtils.showToast(this, "Thêm người dùng")
                 }
             }
+
             R.id.nav_admin_books -> showAddBookDialog()
             R.id.nav_admin_categories -> showAddCategoryDialog()
             else -> {
