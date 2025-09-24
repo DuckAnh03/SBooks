@@ -21,6 +21,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.example.sbooks.R
 import com.example.sbooks.LoginActivity
+import com.example.sbooks.fragments.admin.BookManagementFragment
+import com.example.sbooks.fragments.admin.CategoryManagementFragment
 import com.example.sbooks.fragments.admin.UserManagementFragment
 import com.example.sbooks.utils.Constants
 import com.example.sbooks.utils.DialogUtils
@@ -384,21 +386,39 @@ class AdminMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 }
             }
 
-            R.id.nav_admin_books -> showAddBookDialog()
-            R.id.nav_admin_categories -> showAddCategoryDialog()
+            R.id.nav_admin_books -> {
+                // Get the current fragment and call showAddBookDialog
+                val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
+                val currentFragment = navHostFragment?.childFragmentManager?.fragments?.get(0)
+
+                if (currentFragment is BookManagementFragment) {
+                    Log.d(TAG, "Calling showAddBookDialog on BookManagementFragment")
+                    currentFragment.showAddBookDialog()
+                } else {
+                    Log.w(TAG, "Current fragment is not BookManagementFragment: ${currentFragment?.javaClass?.simpleName}")
+                    DialogUtils.showToast(this, "Thêm sách mới")
+                }
+            }
+
+            R.id.nav_admin_categories -> {
+                // Get the current fragment and call showAddCategoryDialog
+                val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
+                val currentFragment = navHostFragment?.childFragmentManager?.fragments?.get(0)
+
+                if (currentFragment is CategoryManagementFragment) {
+                    Log.d(TAG, "Calling showAddCategoryDialog on CategoryManagementFragment")
+                    currentFragment.showAddCategoryDialog()
+                } else {
+                    Log.w(TAG, "Current fragment is not CategoryManagementFragment: ${currentFragment?.javaClass?.simpleName}")
+                    DialogUtils.showToast(this, "Thêm danh mục mới")
+                }
+            }
+
             else -> {
                 Log.d(TAG, "FAB clicked but no action for destination: $currentDestId")
                 fab.hide()
             }
         }
-    }
-
-    private fun showAddBookDialog() {
-        DialogUtils.showToast(this, "Thêm sách mới")
-    }
-
-    private fun showAddCategoryDialog() {
-        DialogUtils.showToast(this, "Thêm danh mục mới")
     }
 
     private fun showProfileDialog() {

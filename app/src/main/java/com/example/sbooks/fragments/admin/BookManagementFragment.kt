@@ -1,12 +1,17 @@
 package com.example.sbooks.fragments.admin
 
+import android.app.Activity
 import android.app.Dialog
+import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,9 +21,12 @@ import com.example.sbooks.database.DatabaseHelper
 import com.example.sbooks.database.dao.BookDao
 import com.example.sbooks.database.dao.CategoryDao
 import com.example.sbooks.models.BookModel
+import com.example.sbooks.models.CategoryModel
 import com.example.sbooks.models.SearchFilter
 import com.example.sbooks.utils.DialogUtils
+import com.example.sbooks.utils.ImageUtils
 import com.example.sbooks.utils.ValidationUtils
+import java.util.*
 
 class BookManagementFragment : Fragment() {
 
@@ -40,6 +48,25 @@ class BookManagementFragment : Fragment() {
     private lateinit var bookDao: BookDao
     private lateinit var categoryDao: CategoryDao
     private var bookList = mutableListOf<BookModel>()
+
+    // Image handling
+    private var selectedImageUri: Uri? = null
+    private var currentDialog: Dialog? = null
+    private var currentBookImageView: ImageView? = null
+
+    // Image picker launcher
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                selectedImageUri = uri
+                currentBookImageView?.let { imageView ->
+                    ImageUtils.loadSelectedImageToView(requireContext(), uri, imageView)
+                }
+            }
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_book_management, container, false)
@@ -89,11 +116,15 @@ class BookManagementFragment : Fragment() {
         }
     }
 
+    // Add this property to store category data
+    private var categoryList = listOf<CategoryModel>()
+
     private fun setupSpinners() {
         // Category spinner
         try {
-            val categories = listOf("Tất cả thể loại") + categoryDao.getActiveCategories().map { it.name }
-            val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
+            categoryList = categoryDao.getActiveCategories()
+            val categoryNames = listOf("Tất cả thể loại") + categoryList.map { it.name }
+            val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categoryNames)
             categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinnerBookCategory.adapter = categoryAdapter
         } catch (e: Exception) {
@@ -139,22 +170,45 @@ class BookManagementFragment : Fragment() {
             bookList.clear()
             bookList.addAll(bookDao.getAllBooks())
             updateUI()
-            Log.d(TAG, "Loaded ${bookList.size} books")
+
+            // Also reload category list to ensure spinner has latest data
+            categoryList = categoryDao.getActiveCategories()
+            setupCategorySpinner()
+
+            Log.d(TAG, "Loaded ${bookList.size} books and ${categoryList.size} categories")
         } catch (e: Exception) {
             Log.e(TAG, "Error loading books", e)
         }
     }
 
+    private fun setupCategorySpinner() {
+        try {
+            val categoryNames = listOf("Tất cả thể loại") + categoryList.map { it.name }
+            val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categoryNames)
+            categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinnerBookCategory.adapter = categoryAdapter
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting up category spinner", e)
+        }
+    }
+
     private fun filterBooks() {
         val query = etSearchBook.text.toString().trim()
-        val selectedCategory = spinnerBookCategory.selectedItemPosition
+        val selectedCategoryPosition = spinnerBookCategory.selectedItemPosition
         val selectedSort = spinnerSortBy.selectedItemPosition
         val lowStockOnly = cbLowStockOnly.isChecked
 
         try {
+            // Get the actual category ID based on spinner position
+            val selectedCategoryId = if (selectedCategoryPosition > 0 && selectedCategoryPosition <= categoryList.size) {
+                categoryList[selectedCategoryPosition - 1].id // -1 because first item is "Tất cả thể loại"
+            } else {
+                null
+            }
+
             val filter = SearchFilter(
                 query = query,
-                categoryId = if (selectedCategory > 0) selectedCategory else null,
+                categoryId = selectedCategoryId, // Use actual category ID instead of position
                 sortBy = when (selectedSort) {
                     0 -> SearchFilter.SortOption.NAME_ASC
                     1 -> SearchFilter.SortOption.NAME_DESC
@@ -171,6 +225,8 @@ class BookManagementFragment : Fragment() {
             bookAdapter.submitList(filteredList)
             updateBookCount(filteredList.size)
             toggleEmptyState(filteredList.isEmpty())
+
+            Log.d(TAG, "Filter applied - Position: $selectedCategoryPosition, CategoryID: $selectedCategoryId, Results: ${filteredList.size}")
         } catch (e: Exception) {
             Log.e(TAG, "Error filtering books", e)
         }
@@ -191,12 +247,21 @@ class BookManagementFragment : Fragment() {
         layoutEmptyState.visibility = if (isEmpty) View.VISIBLE else View.GONE
     }
 
-    private fun showEditBookDialog(book: BookModel) {
+    // PUBLIC METHOD - Called by AdminMainActivity FAB
+    fun showAddBookDialog() {
+        showBookDialog(null) // null means add new book
+    }
+
+    private fun showBookDialog(book: BookModel?) {
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_add_book)
         dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
+        currentDialog = dialog
+
         val tvDialogTitle = dialog.findViewById<TextView>(R.id.tv_dialog_title)
+        val ivBookPreview = dialog.findViewById<ImageView>(R.id.iv_book_preview)
+        val btnSelectImage = dialog.findViewById<Button>(R.id.btn_select_image)
         val etBookTitle = dialog.findViewById<EditText>(R.id.et_book_title)
         val etBookAuthor = dialog.findViewById<EditText>(R.id.et_book_author)
         val etBookPublisher = dialog.findViewById<EditText>(R.id.et_book_publisher)
@@ -207,6 +272,9 @@ class BookManagementFragment : Fragment() {
         val btnCancel = dialog.findViewById<Button>(R.id.btn_cancel)
         val btnSave = dialog.findViewById<Button>(R.id.btn_save)
 
+        currentBookImageView = ivBookPreview
+        selectedImageUri = null
+
         // Setup category spinner
         val categories = categoryDao.getActiveCategories()
         val categoryNames = categories.map { it.name }
@@ -214,22 +282,50 @@ class BookManagementFragment : Fragment() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerCategory.adapter = adapter
 
-        // Fill existing data
-        tvDialogTitle.text = "Sửa sách"
-        etBookTitle.setText(book.title)
-        etBookAuthor.setText(book.author)
-        etBookPublisher.setText(book.publisher)
-        etBookPrice.setText(book.price.toString())
-        etBookStock.setText(book.stock.toString())
-        etBookDescription.setText(book.description)
+        // Configure for Add or Edit
+        if (book == null) {
+            // Add new book
+            tvDialogTitle.text = "Thêm sách mới"
+            btnSave.text = "Thêm"
+        } else {
+            // Edit existing book
+            tvDialogTitle.text = "Sửa sách"
+            btnSave.text = "Cập nhật"
 
-        // Set selected category
-        val categoryIndex = categories.indexOfFirst { it.id == book.categoryId }
-        if (categoryIndex >= 0) {
-            spinnerCategory.setSelection(categoryIndex)
+            // Fill existing data
+            etBookTitle.setText(book.title)
+            etBookAuthor.setText(book.author)
+            etBookPublisher.setText(book.publisher)
+            etBookPrice.setText(book.price.toString())
+            etBookStock.setText(book.stock.toString())
+            etBookDescription.setText(book.description)
+
+            // Set selected category
+            val categoryIndex = categories.indexOfFirst { it.id == book.categoryId }
+            if (categoryIndex >= 0) {
+                spinnerCategory.setSelection(categoryIndex)
+            }
+
+            // Load existing image if available
+            if (book.image.isNotEmpty()) {
+                val bitmap = ImageUtils.loadImageFromInternalStorage(book.image)
+                if (bitmap != null) {
+                    ivBookPreview.setImageBitmap(bitmap)
+                }
+            }
         }
 
-        btnCancel.setOnClickListener { dialog.dismiss() }
+        // Image selection
+        btnSelectImage.setOnClickListener {
+            openImagePicker()
+        }
+
+        btnCancel.setOnClickListener {
+            currentDialog = null
+            currentBookImageView = null
+            dialog.dismiss()
+        }
+
         btnSave.setOnClickListener {
             val title = etBookTitle.text.toString().trim()
             val author = etBookAuthor.text.toString().trim()
@@ -238,44 +334,105 @@ class BookManagementFragment : Fragment() {
             val stockStr = etBookStock.text.toString().trim()
             val description = etBookDescription.text.toString().trim()
 
-            val validation = ValidationUtils.validateBookInput(title, author, priceStr, stockStr, 1)
+            val validation = ValidationUtils.validateBookInput(title, author, priceStr, stockStr, 1) // Temporary validation
 
             if (!validation.isValid) {
                 DialogUtils.showErrorDialog(requireContext(), validation.errors.joinToString("\n")) {}
                 return@setOnClickListener
             }
 
-            val selectedCategory = if (categories.isNotEmpty() && spinnerCategory.selectedItemPosition >= 0) {
-                categories[spinnerCategory.selectedItemPosition]
-            } else null
+            if (categories.isEmpty() || spinnerCategory.selectedItemPosition < 0) {
+                DialogUtils.showErrorDialog(requireContext(), "Vui lòng chọn thể loại sách") {}
+                return@setOnClickListener
+            }
 
-            val updatedBook = book.copy(
-                title = title,
-                author = author,
-                publisher = publisher,
-                categoryId = selectedCategory?.id ?: book.categoryId,
-                categoryName = selectedCategory?.name ?: book.categoryName,
-                price = priceStr.toDouble(),
-                stock = stockStr.toInt(),
-                description = description
-            )
+            val selectedCategory = categories[spinnerCategory.selectedItemPosition]
+
+            // Handle image saving
+            var imagePath = book?.image ?: ""
+            selectedImageUri?.let { uri ->
+                try {
+                    val compressedBitmap = ImageUtils.compressImage(requireContext(), uri)
+                    compressedBitmap?.let { bitmap ->
+                        val filename = ImageUtils.generateUniqueFileName()
+                        val savedPath = ImageUtils.saveImageToInternalStorage(requireContext(), bitmap, filename)
+                        if (savedPath != null) {
+                            imagePath = savedPath
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error saving image", e)
+                }
+            }
 
             try {
-                val result = bookDao.updateBook(updatedBook)
-                if (result > 0) {
-                    DialogUtils.showToast(requireContext(), "Cập nhật sách thành công")
-                    loadBooks()
-                    dialog.dismiss()
+                if (book == null) {
+                    // Add new book
+                    val newBook = BookModel(
+                        title = title,
+                        author = author,
+                        publisher = publisher,
+                        categoryId = selectedCategory.id,
+                        categoryName = selectedCategory.name,
+                        price = priceStr.toDouble(),
+                        stock = stockStr.toInt(),
+                        description = description,
+                        image = imagePath,
+                        status = BookModel.BookStatus.ACTIVE
+                    )
+
+                    val result = bookDao.insertBook(newBook)
+                    if (result > 0) {
+                        DialogUtils.showToast(requireContext(), "Thêm sách thành công")
+                        loadBooks()
+                        dialog.dismiss()
+                    } else {
+                        DialogUtils.showErrorDialog(requireContext(), "Không thể thêm sách") {}
+                    }
                 } else {
-                    DialogUtils.showErrorDialog(requireContext(), "Không thể cập nhật sách") {}
+                    // Update existing book
+                    val updatedBook = book.copy(
+                        title = title,
+                        author = author,
+                        publisher = publisher,
+                        categoryId = selectedCategory.id,
+                        categoryName = selectedCategory.name,
+                        price = priceStr.toDouble(),
+                        stock = stockStr.toInt(),
+                        description = description,
+                        image = imagePath
+                    )
+
+                    val result = bookDao.updateBook(updatedBook)
+                    if (result > 0) {
+                        DialogUtils.showToast(requireContext(), "Cập nhật sách thành công")
+                        loadBooks()
+                        dialog.dismiss()
+                    } else {
+                        DialogUtils.showErrorDialog(requireContext(), "Không thể cập nhật sách") {}
+                    }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error updating book", e)
-                DialogUtils.showErrorDialog(requireContext(), "Lỗi khi cập nhật: ${e.message}") {}
+                Log.e(TAG, "Error saving book", e)
+                DialogUtils.showErrorDialog(requireContext(), "Lỗi khi lưu: ${e.message}") {}
             }
         }
 
+        dialog.setOnDismissListener {
+            currentDialog = null
+            currentBookImageView = null
+        }
+
         dialog.show()
+    }
+
+    private fun openImagePicker() {
+        val intent = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        imagePickerLauncher.launch(intent)
+    }
+
+    private fun showEditBookDialog(book: BookModel) {
+        showBookDialog(book)
     }
 
     private fun showDeleteBookDialog(book: BookModel) {

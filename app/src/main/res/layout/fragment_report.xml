@@ -49,8 +49,7 @@
                         android:layout_weight="1"
                         android:layout_marginEnd="@dimen/spacing_tiny"
                         android:text="@string/today"
-                        android:textSize="@dimen/text_size_small"
-                        style="@style/ButtonPrimary" />
+                        android:textSize="@dimen/text_size_small" />
 
                     <Button
                         android:id="@+id/btn_this_week"
@@ -59,8 +58,7 @@
                         android:layout_weight="1"
                         android:layout_marginHorizontal="@dimen/spacing_tiny"
                         android:text="@string/this_week"
-                        android:textSize="@dimen/text_size_small"
-                        style="@style/ButtonSecondary" />
+                        android:textSize="@dimen/text_size_small" />
 
                     <Button
                         android:id="@+id/btn_this_month"
@@ -69,8 +67,7 @@
                         android:layout_weight="1"
                         android:layout_marginStart="@dimen/spacing_tiny"
                         android:text="@string/this_month"
-                        android:textSize="@dimen/text_size_small"
-                        style="@style/ButtonSecondary" />
+                        android:textSize="@dimen/text_size_small" />
 
                 </LinearLayout>
 
