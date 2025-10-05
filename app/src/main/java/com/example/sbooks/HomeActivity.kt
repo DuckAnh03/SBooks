@@ -6,7 +6,11 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -33,16 +37,6 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate: Starting HomeActivity")
-
-        /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED) {
-            // Nếu chưa được cấp thì xin quyền
-            ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.CAMERA), 100)
-        } else {
-            // Nếu đã được cấp thì mở camera luôn
-            openCamera()
-        }*/
 
         val filter = IntentFilter()
         filter.addAction("android.intent.action.AIRPLANE_MODE")
@@ -72,26 +66,81 @@ class HomeActivity : AppCompatActivity() {
         }
 
         setupBottomNavigation()
+        setupAutoComplete() // GỌI HÀM NÀY
         Log.d(TAG, "onCreate: HomeActivity setup complete")
     }
-    /*override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
 
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    private fun setupAutoComplete() {
+        // SỬ DỤNG BINDING thay vì findViewById
+        val searchView = binding.searchView // Đảm bảo searchView có trong layout
 
-        if (requestCode == 100) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openCamera()
-            } else {
-                Toast.makeText(this, "Bạn cần cấp quyền Camera để dùng chức năng này", Toast.LENGTH_SHORT).show()
+        // Danh sách gợi ý tĩnh
+        val suggestions = arrayOf(
+            "Android Development",
+            "Kotlin Programming",
+            "Java Programming",
+            "Flutter Development",
+            "React Native",
+            "Mobile App Development"
+        )
+
+        // Tạo adapter cho gợi ý
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_dropdown_item_1line,
+            suggestions
+        )
+
+        searchView.setAdapter(adapter)
+
+        // Xử lý sự kiện khi chọn gợi ý
+        searchView.setOnItemClickListener { parent, view, position, id ->
+            val selectedItem = parent.getItemAtPosition(position) as String
+            // Xử lý khi user chọn gợi ý
+            handleSearchSelection(selectedItem)
+        }
+
+        // Xử lý sự kiện thay đổi text (tùy chọn)
+        searchView.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Có thể filter gợi ý động ở đây
+                filterSuggestions(s.toString())
             }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun handleSearchSelection(selectedItem: String) {
+        // Xử lý khi user chọn một gợi ý
+        Log.d(TAG, "handleSearchSelection: Selected item: $selectedItem")
+        Toast.makeText(this, "Đã chọn: $selectedItem", Toast.LENGTH_SHORT).show()
+
+        // Có thể thực hiện search hoặc navigate đến kết quả tìm kiếm
+        performSearch(selectedItem)
+    }
+
+    private fun filterSuggestions(query: String) {
+        // Logic để filter gợi ý động dựa trên input
+        Log.d(TAG, "filterSuggestions: Query: $query")
+
+        // Ví dụ: có thể gọi API để lấy gợi ý dựa trên query
+        if (query.length >= 2) {
+            // Thực hiện filter hoặc call API
         }
     }
-    private fun openCamera() {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        startActivity(intent)
-    }*/
 
+    private fun performSearch(query: String) {
+        // Thực hiện tìm kiếm với query
+        Log.d(TAG, "performSearch: Searching for: $query")
+
+        // Ví dụ: navigate đến search results activity
+        // val intent = Intent(this, SearchResultsActivity::class.java)
+        // intent.putExtra("query", query)
+        // startActivity(intent)
+    }
 
     private fun setupBottomNavigation() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
@@ -226,4 +275,13 @@ class HomeActivity : AppCompatActivity() {
         // You might want to refresh user state here if needed
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        // Unregister broadcast receiver
+        try {
+            unregisterReceiver(br)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error unregistering receiver", e)
+        }
+    }
 }

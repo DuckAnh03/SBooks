@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
+import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 
 class HomeFragment : Fragment() {
@@ -17,8 +17,8 @@ class HomeFragment : Fragment() {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 
-        // Lấy layout sách trong root
-        val bookLayout = root.findViewById<LinearLayout>(R.id.bookLayout)
+        // Sửa: Lấy CardView thay vì LinearLayout
+        val bookLayout = root.findViewById<CardView>(R.id.bookLayout)
         bookLayout.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, BookDetailFragment())
@@ -26,8 +26,8 @@ class HomeFragment : Fragment() {
                 .commit()
         }
 
-        // Lấy nút "xem thêm danh mục"
-        val btnMore = root.findViewById<ImageView>(R.id.btnMoreCategory)
+        // Sửa: Lấy ImageButton thay vì ImageView
+        val btnMore = root.findViewById<ImageButton>(R.id.btnMoreCategory)
 
         btnMore.setOnClickListener {
             val popup = PopupMenu(requireContext(), btnMore)
@@ -63,5 +63,4 @@ class HomeFragment : Fragment() {
 
         return root
     }
-
 }

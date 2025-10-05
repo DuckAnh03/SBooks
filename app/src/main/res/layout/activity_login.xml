@@ -1,155 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/colorBackground"
-    android:gravity="center"
-    android:padding="@dimen/spacing_large">
+    android:background="@color/colorBackground">
 
-    <!-- Logo Section -->
-    <ImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginBottom="@dimen/spacing_large"
-        android:src="@mipmap/ic_launcher"
-        android:contentDescription="@string/app_name" />
-
-    <!-- App Title -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textSize="@dimen/text_size_large"
-        android:textStyle="bold"
-        android:textColor="@color/colorPrimary"
-        android:layout_marginBottom="@dimen/spacing_small" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/login_title"
-        android:textSize="@dimen/text_size_medium"
-        android:textColor="@color/colorTextSecondary"
-        android:layout_marginBottom="@dimen/spacing_xlarge" />
-
-    <!-- Login Form Card -->
-    <androidx.cardview.widget.CardView
+    <!-- Header Section -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="@dimen/card_radius"
-        app:cardElevation="@dimen/card_elevation"
-        android:layout_marginBottom="@dimen/spacing_large">
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="@dimen/spacing_large">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Logo Section -->
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="@dimen/spacing_large"
+            android:src="@mipmap/ic_launcher"
+            android:contentDescription="@string/app_name" />
+
+        <!-- App Title -->
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/spacing_large">
+            android:text="@string/app_name"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimary"
+            android:layout_marginBottom="@dimen/spacing_small" />
 
-            <!-- Username Input -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_medium"
-                app:hintEnabled="true">
+    </LinearLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_username"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/username"
-                    android:inputType="text"
-                    android:drawableStart="@drawable/ic_users"
-                    android:drawablePadding="@dimen/spacing_medium" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Password Input -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_large"
-                app:hintEnabled="true"
-                app:passwordToggleEnabled="true">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/password"
-                    android:inputType="textPassword"
-                    android:drawableStart="@drawable/ic_lock"
-                    android:drawablePadding="@dimen/spacing_medium" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Login Button -->
-            <Button
-                android:id="@+id/btn_login"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/button_height"
-                android:text="@string/login"
-                android:textSize="@dimen/text_size_normal"
-                android:textStyle="bold"
-                style="@style/ButtonPrimary" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnRegister"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="Đăng ký tài khoản"
-                android:textSize="16sp"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                app:cornerRadius="8dp" />
-        </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
-
-    <!-- Demo Accounts Info -->
-    <androidx.cardview.widget.CardView
+    <!-- Tab Layout for switching between Login/Register -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="@dimen/card_radius"
-        app:cardElevation="2dp"
-        android:backgroundTint="@color/colorInfo"
-        android:alpha="0.9">
+        android:layout_marginHorizontal="@dimen/spacing_large"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
+        app:tabIndicatorColor="@color/colorPrimary"
+        app:tabSelectedTextColor="@color/colorPrimary"
+        app:tabTextColor="@color/colorTextSecondary" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/spacing_medium">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Tài khoản demo:"
-                android:textSize="@dimen/text_size_small"
-                android:textStyle="bold"
-                android:textColor="@color/white"
-                android:layout_marginBottom="@dimen/spacing_small" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="👨‍💼 Admin: admin / admin123"
-                android:textSize="@dimen/text_size_small"
-                android:textColor="@color/white"
-                android:layout_marginBottom="@dimen/spacing_tiny" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="👨‍🔧 Staff: staff / staff123"
-                android:textSize="@dimen/text_size_small"
-                android:textColor="@color/white" />
-
-        </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
+    <!-- ViewPager2 for Fragment switching -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
 </LinearLayout>
-

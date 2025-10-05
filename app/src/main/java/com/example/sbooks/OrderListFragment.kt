@@ -5,55 +5,108 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
+import androidx.cardview.widget.CardView
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [OrderListFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class OrderListFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_order_list, container, false)
+        val root = inflater.inflate(R.layout.fragment_order_list, container, false)
+
+        // Xử lý click vào đơn hàng để mở OrderDetailFragment
+        setupOrderClickListeners(root)
+
+        // Xử lý click vào các tab filter
+        setupTabClickListeners(root)
+
+        return root
     }
 
+    private fun setupOrderClickListeners(root: View) {
+        // Lấy CardView của đơn hàng 1
+        val orderLayout = root.findViewById<CardView>(R.id.orderLayout)
+
+        orderLayout?.setOnClickListener {
+            // Chuyển đến OrderDetailFragment khi click vào đơn hàng
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, OrderDetailFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Có thể thêm click listener cho các đơn hàng khác nếu cần
+        // setupOtherOrderClicks(root)
+    }
+
+    private fun setupTabClickListeners(root: View) {
+        // Lấy các tab filter
+        val tabAll = root.findViewById<TextView>(R.id.tabAll)
+        val tabPending = root.findViewById<TextView>(R.id.tabPending)
+        val tabProcessing = root.findViewById<TextView>(R.id.tabProcessing)
+        val tabCompleted = root.findViewById<TextView>(R.id.tabCompleted)
+        val tabCancelled = root.findViewById<TextView>(R.id.tabCancelled)
+
+        // Xử lý click tab "Tất cả"
+        tabAll?.setOnClickListener {
+            selectTab(tabAll, listOf(tabPending, tabProcessing, tabCompleted, tabCancelled))
+            // TODO: Lọc hiển thị tất cả đơn hàng
+        }
+
+        // Xử lý click tab "Chờ xác nhận"
+        tabPending?.setOnClickListener {
+            selectTab(tabPending, listOf(tabAll, tabProcessing, tabCompleted, tabCancelled))
+            // TODO: Lọc hiển thị đơn hàng chờ xác nhận
+        }
+
+        // Xử lý click tab "Đang giao"
+        tabProcessing?.setOnClickListener {
+            selectTab(tabProcessing, listOf(tabAll, tabPending, tabCompleted, tabCancelled))
+            // TODO: Lọc hiển thị đơn hàng đang giao
+        }
+
+        // Xử lý click tab "Hoàn tất"
+        tabCompleted?.setOnClickListener {
+            selectTab(tabCompleted, listOf(tabAll, tabPending, tabProcessing, tabCancelled))
+            // TODO: Lọc hiển thị đơn hàng hoàn tất
+        }
+
+        // Xử lý click tab "Đã hủy"
+        tabCancelled?.setOnClickListener {
+            selectTab(tabCancelled, listOf(tabAll, tabPending, tabProcessing, tabCompleted))
+            // TODO: Lọc hiển thị đơn hàng đã hủy
+        }
+    }
+
+    private fun selectTab(selectedTab: TextView, otherTabs: List<TextView>) {
+        // Highlight tab được chọn
+        selectedTab.setBackgroundColor(resources.getColor(android.R.color.holo_red_light, null))
+        selectedTab.setTextColor(resources.getColor(android.R.color.white, null))
+
+        // Reset các tab khác
+        otherTabs.forEach { tab ->
+            tab.setBackgroundColor(resources.getColor(android.R.color.darker_gray, null))
+            tab.setTextColor(resources.getColor(android.R.color.darker_gray, null))
+        }
+    }
+
+    // Factory method để tạo instance mới
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment OrderListFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            OrderListFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+        fun newInstance(): OrderListFragment {
+            return OrderListFragment()
+        }
+
+        // Có thể thêm factory method với parameters nếu cần
+        fun newInstance(filterType: String): OrderListFragment {
+            val fragment = OrderListFragment()
+            val args = Bundle().apply {
+                putString("filter_type", filterType)
             }
+            fragment.arguments = args
+            return fragment
+        }
     }
 }
