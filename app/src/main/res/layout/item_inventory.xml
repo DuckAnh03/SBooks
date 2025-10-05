@@ -115,7 +115,9 @@
                 android:layout_height="32dp"
                 android:text="@string/update_stock"
                 android:textSize="@dimen/text_size_tiny"
-                style="@style/ButtonPrimary" />
+                android:textColor="@color/white"
+                android:background="@drawable/bg_button_primary"
+                android:paddingHorizontal="@dimen/spacing_medium"/>
 
         </LinearLayout>
 

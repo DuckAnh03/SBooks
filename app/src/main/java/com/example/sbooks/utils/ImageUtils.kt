@@ -13,6 +13,7 @@ import android.content.Intent
 import android.widget.ImageView
 import com.bumptech.glide.Glide // Add Glide dependency in build.gradle
 import com.example.sbooks.R
+
 object ImageUtils {
 
     const val REQUEST_CODE_PICK_IMAGE = 1001
@@ -39,6 +40,7 @@ object ImageUtils {
             imageView.setImageResource(R.drawable.bg_book_placeholder)
         }
     }
+
     fun compressImage(context: Context, uri: Uri, maxWidth: Int = 800, maxHeight: Int = 600, quality: Int = 80): Bitmap? {
         return try {
             val inputStream = context.contentResolver.openInputStream(uri)
@@ -90,7 +92,11 @@ object ImageUtils {
 
     fun loadImageFromInternalStorage(imagePath: String): Bitmap? {
         return try {
-            BitmapFactory.decodeFile(imagePath)
+            if (imagePath.isNotEmpty() && File(imagePath).exists()) {
+                BitmapFactory.decodeFile(imagePath)
+            } else {
+                null
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             null
@@ -124,6 +130,10 @@ object ImageUtils {
         return "img_${System.currentTimeMillis()}"
     }
 
+    fun generateCategoryIconFileName(): String {
+        return "category_icon_${System.currentTimeMillis()}"
+    }
+
     fun bitmapToByteArray(bitmap: Bitmap, quality: Int = 90): ByteArray {
         val outputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
@@ -132,5 +142,38 @@ object ImageUtils {
 
     fun byteArrayToBitmap(byteArray: ByteArray): Bitmap {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+    }
+
+    // Helper function to get default category icons based on category name
+    fun getDefaultCategoryIcon(categoryName: String): Int {
+        return when (categoryName.lowercase()) {
+            "văn học", "van hoc" -> R.drawable.ic_book
+            "khoa học", "khoa hoc" -> R.drawable.ic_category
+            "nghệ thuật", "nghe thuat" -> R.drawable.ic_category
+            "kinh tế", "kinh te" -> R.drawable.ic_category
+            "lịch sử", "lich su" -> R.drawable.ic_book
+            "tâm lý", "tam ly" -> R.drawable.ic_category
+            else -> R.drawable.ic_category
+        }
+    }
+
+    // Function to create circular bitmap for category icons
+    fun createCircularBitmap(bitmap: Bitmap): Bitmap {
+        val size = minOf(bitmap.width, bitmap.height)
+        val output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val canvas = android.graphics.Canvas(output)
+
+        val paint = android.graphics.Paint()
+        paint.isAntiAlias = true
+        paint.isFilterBitmap = true
+        paint.isDither = true
+
+        canvas.drawCircle(size / 2f, size / 2f, size / 2f, paint)
+        paint.xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.SRC_IN)
+
+        val rect = android.graphics.Rect(0, 0, size, size)
+        canvas.drawBitmap(bitmap, rect, rect, paint)
+
+        return output
     }
 }

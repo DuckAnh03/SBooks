@@ -1,5 +1,6 @@
 package com.example.sbooks.fragments.admin
 
+import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
@@ -115,6 +116,7 @@ class CategoryManagementFragment : Fragment() {
             categoryList.clear()
             categoryList.addAll(categoryDao.getAllCategories())
             updateUI()
+            Log.d(TAG, "Loaded ${categoryList.size} categories")
         } catch (e: Exception) {
             Log.e(TAG, "Error loading categories", e)
         }
@@ -138,7 +140,7 @@ class CategoryManagementFragment : Fragment() {
 
         try {
             var filteredList = if (query.isEmpty()) {
-                categoryList
+                categoryList.toList() // Create a copy to avoid reference issues
             } else {
                 categoryDao.searchCategories(query)
             }
@@ -149,7 +151,7 @@ class CategoryManagementFragment : Fragment() {
                 filteredList = filteredList.filter { it.status == status }
             }
 
-            categoryAdapter.submitList(filteredList)
+            categoryAdapter.submitList(filteredList.toList()) // Pass a new list to trigger update
             updateCategoryCount(filteredList.size)
             toggleEmptyState(filteredList.isEmpty())
         } catch (e: Exception) {
@@ -158,9 +160,10 @@ class CategoryManagementFragment : Fragment() {
     }
 
     private fun updateUI() {
-        categoryAdapter.submitList(categoryList)
+        categoryAdapter.submitList(categoryList.toList()) // Pass a copy to force update
         updateCategoryCount(categoryList.size)
         toggleEmptyState(categoryList.isEmpty())
+        filterCategories() // Reapply current filters
     }
 
     private fun updateCategoryCount(count: Int) {
@@ -172,7 +175,12 @@ class CategoryManagementFragment : Fragment() {
         layoutEmptyState.visibility = if (isEmpty) View.VISIBLE else View.GONE
     }
 
-    private fun showEditCategoryDialog(category: CategoryModel) {
+    // PUBLIC METHOD - Called by AdminMainActivity FAB
+    fun showAddCategoryDialog() {
+        showCategoryDialog(null) // null means add new category
+    }
+
+    private fun showCategoryDialog(category: CategoryModel?) {
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_add_category)
         dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -180,15 +188,61 @@ class CategoryManagementFragment : Fragment() {
         val tvDialogTitle = dialog.findViewById<TextView>(R.id.tv_dialog_title)
         val etCategoryName = dialog.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.et_category_name)
         val etCategoryDescription = dialog.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.et_category_description)
+        val ivCategoryIconPreview = dialog.findViewById<ImageView>(R.id.iv_category_icon_preview)
+        val btnSelectIcon = dialog.findViewById<Button>(R.id.btn_select_icon)
         val btnCancel = dialog.findViewById<Button>(R.id.btn_cancel)
         val btnSave = dialog.findViewById<Button>(R.id.btn_save)
 
-        // Fill existing data
-        tvDialogTitle.text = "Sửa danh mục"
-        etCategoryName.setText(category.name)
-        etCategoryDescription.setText(category.description)
+        var selectedIconResource = R.drawable.ic_category
+
+        // Configure for Add or Edit
+        if (category == null) {
+            // Add new category
+            tvDialogTitle.text = "Thêm danh mục mới"
+            btnSave.text = "Thêm"
+        } else {
+            // Edit existing category
+            tvDialogTitle.text = "Sửa danh mục"
+            btnSave.text = "Cập nhật"
+
+            // Fill existing data
+            etCategoryName.setText(category.name)
+            etCategoryDescription.setText(category.description)
+
+            // Set existing icon
+            if (category.icon.isNotEmpty()) {
+                try {
+                    selectedIconResource = category.icon.toIntOrNull() ?: R.drawable.ic_category
+                    ivCategoryIconPreview.setImageResource(selectedIconResource)
+                } catch (e: Exception) {
+                    selectedIconResource = R.drawable.ic_category
+                    ivCategoryIconPreview.setImageResource(selectedIconResource)
+                }
+            }
+        }
+
+        // Predefined icons with visual representations
+        val iconOptions = arrayOf(
+            IconOption("Thể loại chung", R.drawable.ic_category),
+            IconOption("Sách", R.drawable.ic_book),
+            IconOption("Khoa học", R.drawable.ic_science),
+            IconOption("Văn học", R.drawable.ic_book),
+            IconOption("Nghệ thuật", R.drawable.ic_category),
+            IconOption("Lịch sử", R.drawable.ic_history),
+            IconOption("Kinh tế", R.drawable.ic_economy),
+            IconOption("Manga", R.drawable.ic_manga),
+            IconOption("Tâm lý", R.drawable.ic_psychology_book)
+        )
+
+        btnSelectIcon.setOnClickListener {
+            showIconSelectionDialog(iconOptions) { selectedIcon ->
+                selectedIconResource = selectedIcon.resourceId
+                ivCategoryIconPreview.setImageResource(selectedIconResource)
+            }
+        }
 
         btnCancel.setOnClickListener { dialog.dismiss() }
+
         btnSave.setOnClickListener {
             val name = etCategoryName.text.toString().trim()
             val description = etCategoryDescription.text.toString().trim()
@@ -200,42 +254,169 @@ class CategoryManagementFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            val updatedCategory = category.copy(
-                name = name,
-                description = description
-            )
-
             try {
-                val result = categoryDao.updateCategory(updatedCategory)
-                if (result > 0) {
-                    DialogUtils.showToast(requireContext(), "Cập nhật danh mục thành công")
-                    loadCategories()
-                    loadStatistics()
-                    dialog.dismiss()
+                if (category == null) {
+                    // Add new category
+                    val newCategory = CategoryModel(
+                        name = name,
+                        description = description,
+                        icon = selectedIconResource.toString(),
+                        status = CategoryModel.CategoryStatus.ACTIVE,
+                        sortOrder = categoryList.size
+                    )
+
+                    val result = categoryDao.insertCategory(newCategory)
+                    if (result > 0) {
+                        DialogUtils.showToast(requireContext(), "Thêm danh mục thành công")
+                        // Force refresh data
+                        refreshData()
+                        dialog.dismiss()
+                    } else {
+                        DialogUtils.showErrorDialog(requireContext(), "Không thể thêm danh mục") {}
+                    }
                 } else {
-                    DialogUtils.showErrorDialog(requireContext(), "Không thể cập nhật danh mục") {}
+                    // Update existing category
+                    val updatedCategory = category.copy(
+                        name = name,
+                        description = description,
+                        icon = selectedIconResource.toString()
+                    )
+
+                    val result = categoryDao.updateCategory(updatedCategory)
+                    if (result > 0) {
+                        DialogUtils.showToast(requireContext(), "Cập nhật danh mục thành công")
+                        // Force refresh data
+                        refreshData()
+                        dialog.dismiss()
+                    } else {
+                        DialogUtils.showErrorDialog(requireContext(), "Không thể cập nhật danh mục") {}
+                    }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error updating category", e)
-                DialogUtils.showErrorDialog(requireContext(), "Lỗi khi cập nhật: ${e.message}") {}
+                Log.e(TAG, "Error saving category", e)
+                DialogUtils.showErrorDialog(requireContext(), "Lỗi khi lưu: ${e.message}") {}
             }
         }
 
         dialog.show()
     }
 
+    private data class IconOption(val name: String, val resourceId: Int)
+
+    private fun showIconSelectionDialog(
+        iconOptions: Array<IconOption>,
+        onIconSelected: (IconOption) -> Unit
+    ) {
+        // Create a simple grid dialog with ImageViews
+        val scrollView = ScrollView(requireContext())
+        val linearLayout = LinearLayout(requireContext())
+        linearLayout.orientation = LinearLayout.VERTICAL
+        linearLayout.setPadding(32, 32, 32, 32)
+
+        // Title
+        val titleView = TextView(requireContext())
+        titleView.text = "Chọn biểu tượng cho danh mục"
+        titleView.textSize = 16f
+        titleView.setTypeface(null, android.graphics.Typeface.BOLD)
+        titleView.gravity = android.view.Gravity.CENTER
+        titleView.setPadding(0, 0, 0, 32)
+        linearLayout.addView(titleView)
+
+        // Create grid-like layout using horizontal LinearLayouts
+        val iconsPerRow = 3
+        var currentRow: LinearLayout? = null
+
+        iconOptions.forEachIndexed { index, iconOption ->
+            if (index % iconsPerRow == 0) {
+                currentRow = LinearLayout(requireContext())
+                currentRow!!.orientation = LinearLayout.HORIZONTAL
+                currentRow!!.gravity = android.view.Gravity.CENTER
+                linearLayout.addView(currentRow)
+            }
+
+            // Create icon container
+            val iconContainer = LinearLayout(requireContext())
+            iconContainer.orientation = LinearLayout.VERTICAL
+            iconContainer.gravity = android.view.Gravity.CENTER
+            iconContainer.setPadding(16, 16, 16, 16)
+            iconContainer.isClickable = true
+            iconContainer.isFocusable = true
+
+            // Add click effect
+            val attrs = intArrayOf(android.R.attr.selectableItemBackground)
+            val typedArray = requireContext().obtainStyledAttributes(attrs)
+            val selectableBackground = typedArray.getDrawable(0)
+            typedArray.recycle()
+            iconContainer.background = selectableBackground
+
+            // Create ImageView
+            val imageView = ImageView(requireContext())
+            val imageSize = (48 * resources.displayMetrics.density).toInt()
+            val imageParams = LinearLayout.LayoutParams(imageSize, imageSize)
+            imageView.layoutParams = imageParams
+            imageView.setImageResource(iconOption.resourceId)
+            imageView.setPadding(8, 8, 8, 8)
+            imageView.scaleType = ImageView.ScaleType.CENTER_INSIDE
+
+            // Add circular background
+            try {
+                imageView.setBackgroundResource(R.drawable.bg_circle)
+            } catch (e: Exception) {
+                // If bg_circle doesn't exist, create a simple background
+                val shape = android.graphics.drawable.GradientDrawable()
+                shape.shape = android.graphics.drawable.GradientDrawable.OVAL
+                shape.setColor(0xFFE0E0E0.toInt())
+                imageView.background = shape
+            }
+
+            // Create TextView
+            val textView = TextView(requireContext())
+            textView.text = iconOption.name
+            textView.textSize = 12f
+            textView.gravity = android.view.Gravity.CENTER
+            textView.maxLines = 2
+            textView.setPadding(0, 8, 0, 0)
+            val textParams = LinearLayout.LayoutParams(
+                (100 * resources.displayMetrics.density).toInt(),
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            textView.layoutParams = textParams
+
+            iconContainer.addView(imageView)
+            iconContainer.addView(textView)
+
+            iconContainer.setOnClickListener {
+                onIconSelected(iconOption)
+            }
+
+            currentRow!!.addView(iconContainer)
+        }
+
+        scrollView.addView(linearLayout)
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Chọn biểu tượng")
+            .setView(scrollView)
+            .setNegativeButton("Hủy", null)
+            .show()
+    }
+
+    private fun showEditCategoryDialog(category: CategoryModel) {
+        showCategoryDialog(category)
+    }
+
     private fun showDeleteCategoryDialog(category: CategoryModel) {
         DialogUtils.showConfirmDialog(
             requireContext(),
             "Xác nhận xóa",
-            "Bạn có chắc chắn muốn xóa danh mục ${category.name}?",
+            "Bạn có chắc chắn muốn xóa danh mục ${category.name}?\n\nLưu ý: Việc xóa danh mục có thể ảnh hưởng đến các sách thuộc danh mục này.",
             positiveAction = {
                 try {
                     val result = categoryDao.deleteCategory(category.id)
                     if (result > 0) {
                         DialogUtils.showToast(requireContext(), "Xóa danh mục thành công")
-                        loadCategories()
-                        loadStatistics()
+                        // Force refresh data
+                        refreshData()
                     } else {
                         DialogUtils.showErrorDialog(requireContext(), "Không thể xóa danh mục") {}
                     }
@@ -257,5 +438,16 @@ class CategoryManagementFragment : Fragment() {
         }
 
         DialogUtils.showInfoDialog(requireContext(), "Chi tiết danh mục", message)
+    }
+
+    // Force refresh all data
+    private fun refreshData() {
+        loadCategories()
+        loadStatistics()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshData()
     }
 }

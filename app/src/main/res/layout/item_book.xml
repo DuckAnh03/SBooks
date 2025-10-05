@@ -104,7 +104,6 @@
                 android:layout_width="@dimen/icon_size_medium"
                 android:layout_height="@dimen/icon_size_medium"
                 android:layout_marginBottom="@dimen/spacing_small"
-                android:background="@drawable/bg_button_icon"
                 android:src="@drawable/ic_edit"
                 android:contentDescription="@string/edit" />
 
@@ -112,7 +111,6 @@
                 android:id="@+id/btn_delete_book"
                 android:layout_width="@dimen/icon_size_medium"
                 android:layout_height="@dimen/icon_size_medium"
-                android:background="@drawable/bg_button_icon_danger"
                 android:src="@drawable/ic_delete"
                 android:contentDescription="@string/delete" />
 
