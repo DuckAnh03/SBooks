@@ -222,7 +222,9 @@ class BookManagementFragment : Fragment() {
             )
 
             val filteredList = bookDao.searchBooks(filter)
-            bookAdapter.submitList(filteredList)
+            bookAdapter.submitList(filteredList){
+                rvBooks.scrollToPosition(0)
+            }
             updateBookCount(filteredList.size)
             toggleEmptyState(filteredList.isEmpty())
 

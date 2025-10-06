@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sbooks.R
 import com.example.sbooks.models.BookModel
+import com.example.sbooks.utils.ImageUtils
+
 class InventoryAdapter(
     private val onUpdateStockClick: (BookModel) -> Unit,
     private val onItemClick: (BookModel) -> Unit
@@ -61,8 +63,17 @@ class InventoryAdapter(
                 }
             }
 
-            // Set book image (placeholder for now)
-            ivBookImage.setImageResource(R.drawable.ic_book)
+            if (book.image.isNotEmpty()) {
+                val bitmap = ImageUtils.loadImageFromInternalStorage(book.image)
+                if (bitmap != null) {
+                    ivBookImage.setImageBitmap(bitmap)
+
+                } else {
+                    ivBookImage.setImageResource(R.drawable.ic_book)
+                }
+            } else {
+                ivBookImage.setImageResource(R.drawable.ic_book)
+            }
 
             // Click listeners
             itemView.setOnClickListener { onItemClick(book) }

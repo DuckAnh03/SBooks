@@ -605,6 +605,8 @@ class UserManagementFragment : Fragment() {
             appendLine("Vai trò: ${user.getDisplayRole()}")
             appendLine("Trạng thái: ${user.getDisplayStatus()}")
             appendLine("Ngày tạo: ${user.createdAt}")
+            appendLine("Ngày cập nhật: ${user.updatedAt}")
+            appendLine("ID: ${user.id}")
         }
 
         DialogUtils.showInfoDialog(requireContext(), "Chi tiết người dùng", message)

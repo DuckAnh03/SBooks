@@ -17,6 +17,7 @@ import com.example.sbooks.database.dao.BookDao
 import com.example.sbooks.models.BookModel
 import com.example.sbooks.models.SearchFilter
 import com.example.sbooks.utils.DialogUtils
+import com.example.sbooks.utils.ImageUtils
 import com.example.sbooks.utils.ValidationUtils
 
 class StaffInventoryFragment : Fragment() {
@@ -205,12 +206,24 @@ class StaffInventoryFragment : Fragment() {
         val rgUpdateType = dialog.findViewById<RadioGroup>(R.id.rg_update_type)
         val btnCancel = dialog.findViewById<Button>(R.id.btn_cancel)
         val btnUpdate = dialog.findViewById<Button>(R.id.btn_update)
+        val ivBookPreview = dialog.findViewById<ImageView>(R.id.iv_book_preview)
 
         // Populate book info
         tvBookTitleDialog.text = book.title
         tvBookAuthorDialog.text = book.author
         tvCurrentStock.text = "Số lượng hiện tại: ${book.stock}"
         etNewStock.setText(book.stock.toString())
+
+        if (book.image.isNotEmpty()) {
+            val bitmap = ImageUtils.loadImageFromInternalStorage(book.image)
+            if (bitmap != null) {
+                ivBookPreview.setImageBitmap(bitmap)
+            } else {
+                ivBookPreview.setImageResource(R.drawable.ic_book)
+            }
+        } else {
+            ivBookPreview.setImageResource(R.drawable.ic_book)
+        }
 
         btnCancel.setOnClickListener { dialog.dismiss() }
         btnUpdate.setOnClickListener {
