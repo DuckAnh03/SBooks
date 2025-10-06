@@ -45,16 +45,16 @@
                     <Button
                         android:id="@+id/btn_today"
                         android:layout_width="0dp"
-                        android:layout_height="32dp"
-                        android:layout_weight="1"
+                        android:layout_height="40dp"
                         android:layout_marginEnd="@dimen/spacing_tiny"
+                        android:layout_weight="1"
                         android:text="@string/today"
                         android:textSize="@dimen/text_size_small" />
 
                     <Button
                         android:id="@+id/btn_this_week"
                         android:layout_width="0dp"
-                        android:layout_height="32dp"
+                        android:layout_height="40dp"
                         android:layout_weight="1"
                         android:layout_marginHorizontal="@dimen/spacing_tiny"
                         android:text="@string/this_week"
@@ -63,7 +63,7 @@
                     <Button
                         android:id="@+id/btn_this_month"
                         android:layout_width="0dp"
-                        android:layout_height="32dp"
+                        android:layout_height="40dp"
                         android:layout_weight="1"
                         android:layout_marginStart="@dimen/spacing_tiny"
                         android:text="@string/this_month"

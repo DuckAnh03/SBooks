@@ -13,6 +13,7 @@ import com.example.sbooks.database.DatabaseHelper
 import com.example.sbooks.models.BookModel
 import com.example.sbooks.models.SearchFilter
 import com.example.sbooks.utils.DialogUtils
+import com.example.sbooks.utils.ImageUtils
 import com.example.sbooks.utils.ValidationUtils
 
 class StaffInventoryActivity : AppCompatActivity() {
@@ -205,7 +206,17 @@ class StaffInventoryActivity : AppCompatActivity() {
         tvBookTitleDialog.text = book.title
         tvBookAuthorDialog.text = book.author
         tvCurrentStock.text = "Số lượng hiện tại: ${book.stock}"
-        ivBookPreview.setImageResource(R.drawable.ic_book) // Placeholder
+
+        if (book.image.isNotEmpty()) {
+            val bitmap = ImageUtils.loadImageFromInternalStorage(book.image)
+            if (bitmap != null) {
+                ivBookPreview.setImageBitmap(bitmap)
+            } else {
+                ivBookPreview.setImageResource(R.drawable.ic_book)
+            }
+        } else {
+            ivBookPreview.setImageResource(R.drawable.ic_book)
+        }
 
         // Set default values
         rbSetQuantity.isChecked = true

@@ -1,5 +1,8 @@
 package com.example.sbooks.fragments.admin
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +22,12 @@ import com.example.sbooks.database.DatabaseHelper
 import com.example.sbooks.database.dao.BookDao
 import com.example.sbooks.database.dao.OrderDao
 import com.example.sbooks.database.dao.UserDao
+import com.example.sbooks.models.BestSellerBookModel
+import com.example.sbooks.models.TopRatedBookModel
 import com.example.sbooks.utils.DialogUtils
+import com.example.sbooks.utils.ReportExportUtils
+import com.example.sbooks.utils.DatePickerUtils
+import java.util.*
 
 class ReportFragment : Fragment() {
 
@@ -45,6 +55,44 @@ class ReportFragment : Fragment() {
     private lateinit var userDao: UserDao
     private lateinit var bestSellerAdapter: BestSellerAdapter
     private lateinit var topRatedAdapter: TopRatedAdapter
+
+    // Current data for export
+    private var currentTotalRevenue = 0.0
+    private var currentTotalOrders = 0
+    private var currentAvgOrderValue = 0.0
+    private var currentBestSellerBooks = listOf<BestSellerBookModel>()
+    private var currentTopRatedBooks = listOf<TopRatedBookModel>()
+    private var currentPeriod = "Hôm nay"
+
+    // Custom date range
+    private var customFromDate: Calendar? = null
+    private var customToDate: Calendar? = null
+
+    // Export type tracker
+    private var pendingExportType: ExportType? = null
+
+    private enum class ExportType {
+        PDF, CSV
+    }
+
+    // Permission launcher using the modern API
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // Permission granted, proceed with export
+            when (pendingExportType) {
+                ExportType.PDF -> exportToPdf()
+                ExportType.CSV -> exportToCSV()
+                null -> {}
+            }
+            pendingExportType = null
+        } else {
+            // Permission denied
+            DialogUtils.showToast(requireContext(), "Cần quyền truy cập để xuất file")
+            pendingExportType = null
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_report, container, false)
@@ -109,37 +157,88 @@ class ReportFragment : Fragment() {
     private fun setupClickListeners() {
         btnToday.setOnClickListener {
             selectTimePeriod(btnToday)
+            currentPeriod = "Hôm nay"
             loadReportData("today")
         }
 
         btnThisWeek.setOnClickListener {
             selectTimePeriod(btnThisWeek)
+            currentPeriod = "Tuần này"
             loadReportData("week")
         }
 
         btnThisMonth.setOnClickListener {
             selectTimePeriod(btnThisMonth)
+            currentPeriod = "Tháng này"
             loadReportData("month")
         }
 
         btnCustomDateFrom.setOnClickListener {
-            DialogUtils.showToast(requireContext(), "Chọn ngày bắt đầu")
+            DatePickerUtils.showDatePicker(
+                requireContext(),
+                btnCustomDateFrom,
+                customFromDate
+            ) { selectedDate ->
+                customFromDate = selectedDate
+                checkCustomDateRange()
+            }
         }
 
         btnCustomDateTo.setOnClickListener {
-            DialogUtils.showToast(requireContext(), "Chọn ngày kết thúc")
+            DatePickerUtils.showDatePicker(
+                requireContext(),
+                btnCustomDateTo,
+                customToDate
+            ) { selectedDate ->
+                customToDate = selectedDate
+                checkCustomDateRange()
+            }
         }
 
         btnExportPdf.setOnClickListener {
-            DialogUtils.showToast(requireContext(), "Xuất PDF - Tính năng đang phát triển")
+            handleExport(ExportType.PDF)
         }
 
         btnExportExcel.setOnClickListener {
-            DialogUtils.showToast(requireContext(), "Xuất Excel - Tính năng đang phát triển")
+            handleExport(ExportType.CSV)
         }
 
         // Set default selection
         selectTimePeriod(btnToday)
+    }
+
+    private fun handleExport(exportType: ExportType) {
+        if (needsStoragePermission()) {
+            // Request permission
+            pendingExportType = exportType
+            requestStoragePermission()
+        } else {
+            // No permission needed or already granted
+            when (exportType) {
+                ExportType.PDF -> exportToPdf()
+                ExportType.CSV -> exportToCSV()
+            }
+        }
+    }
+
+    private fun needsStoragePermission(): Boolean {
+        // Android 10 (API 29) and above don't need WRITE_EXTERNAL_STORAGE for app-specific directories
+        // or when using MediaStore API
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // For Android 10+, we typically don't need this permission if saving to app-specific storage
+            // or using MediaStore. But check if your ReportExportUtils requires it.
+            false
+        } else {
+            // For Android 9 and below, check if permission is granted
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    private fun requestStoragePermission() {
+        requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     }
 
     private fun selectTimePeriod(selectedButton: Button) {
@@ -152,34 +251,173 @@ class ReportFragment : Fragment() {
         selectedButton.setBackgroundResource(R.drawable.bg_button_primary)
     }
 
+    private fun checkCustomDateRange() {
+        if (customFromDate != null && customToDate != null) {
+            // Validate date range
+            if (customFromDate!!.after(customToDate)) {
+                DialogUtils.showToast(requireContext(), "Ngày bắt đầu không thể sau ngày kết thúc")
+                return
+            }
+
+            // Update period text and load data
+            val fromText = DatePickerUtils.formatDate(customFromDate!!)
+            val toText = DatePickerUtils.formatDate(customToDate!!)
+            currentPeriod = "$fromText - $toText"
+
+            // Reset button selection
+            btnToday.setBackgroundResource(R.drawable.bg_button_secondary)
+            btnThisWeek.setBackgroundResource(R.drawable.bg_button_secondary)
+            btnThisMonth.setBackgroundResource(R.drawable.bg_button_secondary)
+
+            loadReportData("custom")
+        }
+    }
+
     private fun loadReportData(period: String = "today") {
         try {
-            // Load basic statistics
+            // Load basic statistics based on period
             val allOrders = orderDao.getAllOrders()
-            val completedOrders = allOrders.filter { it.status == com.example.sbooks.models.OrderModel.OrderStatus.DELIVERED }
+            val filteredOrders = when (period) {
+                "today" -> {
+                    val today = Calendar.getInstance()
+                    allOrders.filter { order ->
+                        val orderDate = Calendar.getInstance()
+                        // Assuming order has a date field - adjust based on your OrderModel
+                        // orderDate.time = order.orderDate
+                        isSameDay(orderDate, today)
+                    }
+                }
+                "week" -> {
+                    val weekStart = Calendar.getInstance().apply {
+                        set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+                        DatePickerUtils.getStartOfDay(this)
+                    }
+                    allOrders.filter { order ->
+                        val orderDate = Calendar.getInstance()
+                        // orderDate.time = order.orderDate
+                        orderDate.after(weekStart)
+                    }
+                }
+                "month" -> {
+                    val monthStart = Calendar.getInstance().apply {
+                        set(Calendar.DAY_OF_MONTH, 1)
+                        DatePickerUtils.getStartOfDay(this)
+                    }
+                    allOrders.filter { order ->
+                        val orderDate = Calendar.getInstance()
+                        // orderDate.time = order.orderDate
+                        orderDate.after(monthStart)
+                    }
+                }
+                "custom" -> {
+                    if (customFromDate != null && customToDate != null) {
+                        val fromDate = DatePickerUtils.getStartOfDay(customFromDate!!)
+                        val toDate = DatePickerUtils.getEndOfDay(customToDate!!)
+                        allOrders.filter { order ->
+                            val orderDate = Calendar.getInstance()
+                            // orderDate.time = order.orderDate
+                            orderDate.after(fromDate) && orderDate.before(toDate)
+                        }
+                    } else allOrders
+                }
+                else -> allOrders
+            }
 
-            val totalRevenue = completedOrders.sumOf { it.finalAmount }
-            val totalOrders = completedOrders.size
-            val avgOrderValue = if (totalOrders > 0) totalRevenue / totalOrders else 0.0
+            val completedOrders = filteredOrders.filter { it.status == com.example.sbooks.models.OrderModel.OrderStatus.DELIVERED }
 
-            tvTotalRevenueAmount.text = String.format("%,.0f VNĐ", totalRevenue)
-            tvTotalOrdersCount.text = totalOrders.toString()
-            tvAvgOrderValue.text = String.format("%,.0f VNĐ", avgOrderValue)
+            currentTotalRevenue = completedOrders.sumOf { it.finalAmount }
+            currentTotalOrders = completedOrders.size
+            currentAvgOrderValue = if (currentTotalOrders > 0) currentTotalRevenue / currentTotalOrders else 0.0
+
+            tvTotalRevenueAmount.text = String.format("%,.0f VNĐ", currentTotalRevenue)
+            tvTotalOrdersCount.text = currentTotalOrders.toString()
+            tvAvgOrderValue.text = String.format("%,.0f VNĐ", currentAvgOrderValue)
 
             // Load bestselling books
-            val bestSellingBooks = bookDao.getBestSellingBooks(10)
-            bestSellerAdapter.submitList(bestSellingBooks)
+            currentBestSellerBooks = bookDao.getBestSellingBooks(10)
+            bestSellerAdapter.submitList(currentBestSellerBooks)
 
             // Load top rated books
-            val topRatedBooks = bookDao.getTopRatedBooks(10)
-            topRatedAdapter.submitList(topRatedBooks)
+            currentTopRatedBooks = bookDao.getTopRatedBooks(10)
+            topRatedAdapter.submitList(currentTopRatedBooks)
 
         } catch (e: Exception) {
             Log.e(TAG, "Error loading report data", e)
             // Set default values
+            currentTotalRevenue = 0.0
+            currentTotalOrders = 0
+            currentAvgOrderValue = 0.0
+            currentBestSellerBooks = emptyList()
+            currentTopRatedBooks = emptyList()
+
             tvTotalRevenueAmount.text = "0 VNĐ"
             tvTotalOrdersCount.text = "0"
             tvAvgOrderValue.text = "0 VNĐ"
+        }
+    }
+
+    private fun isSameDay(cal1: Calendar, cal2: Calendar): Boolean {
+        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
+    }
+
+    private fun exportToPdf() {
+        try {
+            btnExportPdf.isEnabled = false
+            btnExportPdf.text = "Đang xuất PDF..."
+
+            val success = ReportExportUtils.exportToPdf(
+                requireContext(),
+                currentTotalRevenue,
+                currentTotalOrders,
+                currentAvgOrderValue,
+                currentBestSellerBooks,
+                currentTopRatedBooks,
+                currentPeriod
+            )
+
+            if (success) {
+                DialogUtils.showToast(requireContext(), "Xuất PDF thành công!")
+            } else {
+                DialogUtils.showToast(requireContext(), "Lỗi khi xuất PDF")
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error exporting PDF", e)
+            DialogUtils.showToast(requireContext(), "Lỗi khi xuất PDF: ${e.message}")
+        } finally {
+            btnExportPdf.isEnabled = true
+            btnExportPdf.text = "Xuất PDF"
+        }
+    }
+
+    private fun exportToCSV() {
+        try {
+            btnExportExcel.isEnabled = false
+            btnExportExcel.text = "Đang xuất CSV..."
+
+            val success = ReportExportUtils.exportToExcel(
+                requireContext(),
+                currentTotalRevenue,
+                currentTotalOrders,
+                currentAvgOrderValue,
+                currentBestSellerBooks,
+                currentTopRatedBooks,
+                currentPeriod
+            )
+
+            if (success) {
+                DialogUtils.showToast(requireContext(), "Xuất CSV thành công!")
+            } else {
+                DialogUtils.showToast(requireContext(), "Lỗi khi xuất CSV")
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error exporting CSV", e)
+            DialogUtils.showToast(requireContext(), "Lỗi khi xuất CSV: ${e.message}")
+        } finally {
+            btnExportExcel.isEnabled = true
+            btnExportExcel.text = "Xuất Excel"
         }
     }
 }
