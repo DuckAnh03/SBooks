@@ -126,6 +126,9 @@ class LoginFragment : Fragment() {
                 username = user.username,
                 userRole = user.role.value
             )
+            sharedPrefsHelper.saveString("full_name", user.fullName)
+            sharedPrefsHelper.saveString("email", user.email)
+            sharedPrefsHelper.saveString("avatar", user.avatar)
 
             // Show success message
             Toast.makeText(

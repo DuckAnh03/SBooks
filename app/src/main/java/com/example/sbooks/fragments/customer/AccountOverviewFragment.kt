@@ -14,6 +14,7 @@ import com.example.sbooks.activities.customer.HomeActivity
 import com.example.sbooks.activities.customer.LoginActivity
 import com.example.sbooks.database.dao.UserDao
 import com.example.sbooks.databinding.FragmentAccountOverviewBinding
+import com.example.sbooks.utils.ImageUtils
 import com.example.sbooks.utils.SharedPrefsHelper
 
 class AccountOverviewFragment : Fragment() {
@@ -54,11 +55,19 @@ class AccountOverviewFragment : Fragment() {
             val address = user.address
             val role = user.role
 
+
             // Display user data
             binding.apply {
                 // User header
                 tvUserName.text = fullName.ifEmpty { username }
                 tvUserEmail.text = email
+                if (user.avatar.isNotEmpty()) {
+                    val bitmap = ImageUtils.loadImageFromInternalStorage(user.avatar)
+                    if (bitmap != null) {
+                        ivAvatar.setImageBitmap(bitmap)
+                    }
+                }
+
 
                 // Profile section
                 tvProfileName.text = fullName.ifEmpty { "Chưa cập nhật" }
