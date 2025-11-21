@@ -75,7 +75,7 @@ class HomeActivity : AppCompatActivity() {
         bookDao = BookDao(dbHelper.writableDatabase)
 
         // Khởi tạo Chat
-        chatViewModel.initializeChat("AIzaSyAexonKruUZveyD01BRenIEq5-SPtV92pU") // Thay YOUR_API_KEY
+        chatViewModel.initializeChat("") // Thay YOUR_API_KEY
 
         // Sử dụng ViewBinding cho layout Home
         binding = ActivityHomeBinding.inflate(layoutInflater)
