@@ -1,6 +1,7 @@
 package com.example.sbooks.utils
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 object DateUtils {
 
@@ -128,6 +129,33 @@ object DateUtils {
             SimpleDateFormat(format, Locale.getDefault()).format(date)
         } catch (e: Exception) {
             ""
+        }
+    }
+    fun getRelativeTime(dateString: String): String {
+        try {
+            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val date = sdf.parse(dateString) ?: return dateString
+
+            val now = Calendar.getInstance().time
+            val diff = now.time - date.time
+
+            val seconds = TimeUnit.MILLISECONDS.toSeconds(diff)
+            val minutes = TimeUnit.MILLISECONDS.toMinutes(diff)
+            val hours = TimeUnit.MILLISECONDS.toHours(diff)
+            val days = TimeUnit.MILLISECONDS.toDays(diff)
+
+            return when {
+                seconds < 60 -> "Vừa xong"
+                minutes < 60 -> "$minutes phút trước"
+                hours < 24 -> "$hours giờ trước"
+                days < 7 -> "$days ngày trước"
+                days < 30 -> "${days / 7} tuần trước"
+                days < 365 -> "${days / 30} tháng trước"
+                else -> "${days / 365} năm trước"
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return dateString
         }
     }
 }

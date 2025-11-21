@@ -10,7 +10,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
@@ -18,7 +17,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -28,7 +26,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.example.sbooks.R
-import com.example.sbooks.LoginActivity
+import com.example.sbooks.activities.customer.LoginActivity
 import com.example.sbooks.fragments.admin.BookManagementFragment
 import com.example.sbooks.fragments.admin.CategoryManagementFragment
 import com.example.sbooks.fragments.admin.UserManagementFragment

@@ -1,4 +1,5 @@
 package com.example.sbooks.adapter
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,9 +23,22 @@ class CategoryAdapter(
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_category, parent, false)
         return CategoryViewHolder(view)
     }
-
+    var selectedPosition = -1
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         holder.bind(getItem(position))
+
+        val category = getItem(position) // Lấy item ở vị trí position
+        // Highlight item
+        if (position == selectedPosition) {
+            holder.itemView.setBackgroundColor(Color.parseColor("#FF5722"))
+        } else {
+            holder.itemView.setBackgroundColor(Color.TRANSPARENT)
+        }
+        holder.itemView.setOnClickListener {
+            selectedPosition = position
+            notifyDataSetChanged()
+            onItemClick(category)
+        }
     }
 
     inner class CategoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

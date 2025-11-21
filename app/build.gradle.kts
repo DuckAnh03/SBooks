@@ -64,4 +64,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("de.hdodenhof:circleimageview:3.1.0")
 }

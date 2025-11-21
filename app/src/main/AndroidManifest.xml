@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permission để kiểm tra WiFi -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SBooks">
         <activity
-            android:name=".AccountActivity"
+            android:name=".activities.customer.AccountActivity"
             android:exported="false" />
         <activity
             android:name=".activities.staff.StaffInventoryActivity"
@@ -24,10 +28,10 @@
             android:name=".activities.admin.UserManagementActivity"
             android:exported="false" />
         <activity
-            android:name=".PaymentActivity"
+            android:name=".activities.customer.PaymentActivity"
             android:exported="false" />
         <activity
-            android:name=".HomeActivity"
+            android:name=".activities.customer.HomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,7 +40,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".activities.customer.LoginActivity"
             android:exported="false"
             android:theme="@style/Theme.SBooks" />
         <activity

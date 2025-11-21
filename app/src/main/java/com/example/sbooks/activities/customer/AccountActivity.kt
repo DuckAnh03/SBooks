@@ -1,11 +1,12 @@
-package com.example.sbooks
+package com.example.sbooks.activities.customer
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import com.example.sbooks.fragments.customer.AccountOverviewFragment
+import com.example.sbooks.R
 
 class AccountActivity : AppCompatActivity() {
 
@@ -13,6 +14,13 @@ class AccountActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_account)
 
+        val rootView = findViewById<android.view.View>(R.id.main)
+
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         // Load fragment đầu tiên khi activity được tạo
         if (savedInstanceState == null) {
             loadDefaultFragment()

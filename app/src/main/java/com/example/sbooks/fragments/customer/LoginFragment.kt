@@ -1,9 +1,7 @@
-package com.example.sbooks
+package com.example.sbooks.fragments.customer
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -13,10 +11,16 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.sbooks.activities.admin.AdminMainActivity
+import com.example.sbooks.activities.customer.HomeActivity
 import com.example.sbooks.activities.staff.StaffMainActivity
+import com.example.sbooks.database.DatabaseHelper
+import com.example.sbooks.database.dao.UserDao
 import com.example.sbooks.databinding.FragmentLoginBinding
+import com.example.sbooks.models.UserModel
+import com.example.sbooks.activities.customer.LoginActivity
+import com.example.sbooks.utils.SharedPrefsHelper
+import com.example.sbooks.activities.customer.AccountActivity
 
-// LoginFragment.kt - Demo version
 class LoginFragment : Fragment() {
 
     private companion object {
@@ -25,6 +29,8 @@ class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
+    private lateinit var userDao: UserDao
+    private lateinit var sharedPrefsHelper: SharedPrefsHelper
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +43,20 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "LoginFragment created")
+
+        // Initialize database
+        val dbHelper = DatabaseHelper(requireContext())
+        userDao = UserDao(dbHelper.readableDatabase)
+
+        // KHỞI TẠO SharedPrefsHelper
+        sharedPrefsHelper = SharedPrefsHelper(requireContext())
+        // Check if already logged in (SỬ DỤNG SharedPrefsHelper)
+        if (sharedPrefsHelper.isLoggedIn()) {
+            // Lấy role từ SharedPrefsHelper
+            navigateToRoleActivity(sharedPrefsHelper.getUserRole())
+            return
+        }
+
         setupViews()
     }
 
@@ -45,8 +64,6 @@ class LoginFragment : Fragment() {
         binding.btnLogin.setOnClickListener {
             val username = binding.etUsername.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
-
-            Log.d(TAG, "Login attempt for username: $username")
 
             if (validateInput(username, password)) {
                 performLogin(username, password)
@@ -94,47 +111,47 @@ class LoginFragment : Fragment() {
         // Show loading state
         binding.btnLogin.isEnabled = false
         binding.btnLogin.text = "Đang đăng nhập..."
-
-        // Disable input fields during login
         binding.etUsername.isEnabled = false
         binding.etPassword.isEnabled = false
 
-        // Simulate API call with delay
-        Handler(Looper.getMainLooper()).postDelayed({
+        // Validate login from database
+        val user = userDao.validateLogin(username, password)
 
-            // Reset UI state first
+        if (user != null) {
+            Log.i(TAG, "Login successful for user: ${user.username}, role: ${user.role}")
+
+            // Save session
+            sharedPrefsHelper.saveUserSession(
+                userId = user.id,
+                username = user.username,
+                userRole = user.role.value
+            )
+
+            // Show success message
+            Toast.makeText(
+                requireContext(),
+                "Đăng nhập thành công! Xin chào ${user.fullName}",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            // Navigate based on role
+            navigateToRoleActivity(user.role.value)
+        } else {
+            Log.w(TAG, "Login failed for username: $username")
+
+            // Reset UI
             resetLoginUI()
 
-            // Check demo accounts
-            when {
-                username == "admin" && password == "admin123" -> {
-                    Log.i(TAG, "Demo admin login successful")
-                    Toast.makeText(context, "✅ Đăng nhập thành công với tài khoản Admin", Toast.LENGTH_SHORT).show()
-                    navigateToActivity(AdminMainActivity::class.java, "admin")
-                }
-                username == "staff" && password == "staff123" -> {
-                    Log.i(TAG, "Demo staff login successful")
-                    Toast.makeText(context, "✅ Đăng nhập thành công với tài khoản Staff", Toast.LENGTH_SHORT).show()
-                    navigateToActivity(StaffMainActivity::class.java, "staff")
-                }
-                // Add more demo accounts for testing
-                username.startsWith("test") && password == "123456" -> {
-                    Toast.makeText(context, "✅ Đăng nhập thành công với tài khoản Test", Toast.LENGTH_SHORT).show()
-                    // For demo, just show success without navigation
-                }
-                else -> {
-                    Log.w(TAG, "Login failed for username: $username")
-                    Toast.makeText(context, "❌ Tên đăng nhập hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Tên đăng nhập hoặc mật khẩu không đúng",
+                Toast.LENGTH_SHORT
+            ).show()
 
-                    // Clear password and focus on it
-                    binding.etPassword.text?.clear()
-                    binding.etPassword.requestFocus()
-
-                    // Shake animation effect (optional)
-                    binding.etUsername.startAnimation(android.view.animation.AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left))
-                }
-            }
-        }, 1500) // 1.5 second delay to simulate network call
+            // Clear password and focus
+            binding.etPassword.text?.clear()
+            binding.etPassword.requestFocus()
+        }
     }
 
     private fun resetLoginUI() {
@@ -144,16 +161,26 @@ class LoginFragment : Fragment() {
         binding.etPassword.isEnabled = true
     }
 
-    private fun navigateToActivity(activityClass: Class<*>, userType: String) {
+    // Trong LoginFragment.kt, sửa hàm navigateToRoleActivity:
+
+    private fun navigateToRoleActivity(role: String) {
+        val activityClass = when (role) {
+            "admin" -> AdminMainActivity::class.java
+            "staff" -> StaffMainActivity::class.java
+            "customer" -> AccountActivity::class.java
+            else -> {
+                Log.e(TAG, "Unknown user role: $role. Navigating to HomeActivity as default.")
+                HomeActivity::class.java // Cần thêm ::class.java để khớp kiểu dữ liệu
+            }
+        }
         try {
             val intent = Intent(activity, activityClass)
-            intent.putExtra("user_type", userType)
-            intent.putExtra("demo_mode", true)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             activity?.finish()
         } catch (e: Exception) {
-            Log.e(TAG, "Navigation failed", e)
-            Toast.makeText(context, "Chức năng đang được phát triển", Toast.LENGTH_SHORT).show()
+            Log.e(TAG, "Navigation failed: ${e.message}", e)
+            Toast.makeText(context, "Lỗi: Không thể chuyển màn hình đến ${activityClass.simpleName}", Toast.LENGTH_LONG).show()
         }
     }
 

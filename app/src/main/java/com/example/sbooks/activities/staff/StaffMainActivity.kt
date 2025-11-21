@@ -19,7 +19,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.example.sbooks.R
-import com.example.sbooks.LoginActivity
+import com.example.sbooks.activities.customer.LoginActivity
 import com.example.sbooks.utils.Constants
 import com.example.sbooks.utils.DialogUtils
 import com.example.sbooks.utils.SharedPrefsHelper

@@ -57,7 +57,7 @@
                 android:layout_width="180dp"
                 android:layout_height="240dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="4dp">
 
@@ -70,6 +70,21 @@
                     android:background="#E8F5E8"
                     android:contentDescription="Bìa sách"/>
             </androidx.cardview.widget.CardView>
+
+            <!-- Category badge -->
+            <TextView
+                android:id="@+id/tvCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lập trình"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"
+                android:background="#2196F3"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:textStyle="bold"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"/>
 
             <!-- Book Info Card -->
             <androidx.cardview.widget.CardView
@@ -173,6 +188,7 @@
                         </LinearLayout>
 
                         <TextView
+                            android:id="@+id/tvDiscount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="-20%"
@@ -214,13 +230,446 @@
                         android:id="@+id/tvDescription"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Cuốn sách này cung cấp kiến thức từ cơ bản đến nâng cao về lập trình Android. Phù hợp cho người mới bắt đầu và developer có kinh nghiệm muốn nâng cao kỹ năng."
+                        android:text="Cuốn sách này cung cấp kiến thức từ cơ bản đến nâng cao về lập trình Android."
                         android:textSize="14sp"
                         android:textColor="#666666"
                         android:lineSpacingExtra="4dp"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- Reviews & Rating Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@android:color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <!-- Header section -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Đánh giá &amp; Nhận xét"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="#1A1A1A"/>
+
+                        <Button
+                            android:id="@+id/btnWriteReview"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:text="Viết đánh giá"
+                            android:textSize="13sp"
+                            android:textAllCaps="false"
+                            android:paddingHorizontal="16dp"
+                            android:backgroundTint="#2196F3"
+                            android:textColor="@android:color/white"/>
+                    </LinearLayout>
+
+                    <!-- Rating summary -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp"
+                        android:background="#F8F9FA"
+                        android:layout_marginBottom="16dp">
+
+                        <!-- Average rating -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/tvAverageRating"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="4.5"
+                                android:textSize="36sp"
+                                android:textStyle="bold"
+                                android:textColor="#1A1A1A"/>
+
+                            <RatingBar
+                                android:id="@+id/ratingBarAverage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:numStars="5"
+                                android:rating="4.5"
+                                android:stepSize="0.5"
+                                android:isIndicator="true"
+                                style="?android:attr/ratingBarStyleSmall"
+                                android:progressTint="#FFB300"
+                                android:layout_marginTop="4dp"/>
+
+                            <TextView
+                                android:id="@+id/tvTotalReviews"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="125 đánh giá"
+                                android:textSize="12sp"
+                                android:textColor="#666666"
+                                android:layout_marginTop="4dp"/>
+                        </LinearLayout>
+
+                        <!-- Rating breakdown -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:orientation="vertical"
+                            android:layout_marginStart="16dp">
+
+                            <!-- 5 stars -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginBottom="4dp">
+
+                                <TextView
+                                    android:layout_width="20dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="5"
+                                    android:textSize="12sp"
+                                    android:textColor="#666666"/>
+
+                                <ImageView
+                                    android:layout_width="12dp"
+                                    android:layout_height="12dp"
+                                    android:src="@drawable/ic_star_rate"
+                                    app:tint="#FFB300"
+                                    android:layout_marginStart="2dp"/>
+
+                                <ProgressBar
+                                    android:id="@+id/progressBar5Star"
+                                    style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_width="0dp"
+                                    android:layout_height="8dp"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="8dp"
+                                    android:progress="70"
+                                    android:progressTint="#FFB300"/>
+
+                                <TextView
+                                    android:id="@+id/tvCount5Star"
+                                    android:layout_width="30dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="70"
+                                    android:textSize="11sp"
+                                    android:textColor="#666666"
+                                    android:gravity="end"
+                                    android:layout_marginStart="8dp"/>
+                            </LinearLayout>
+
+                            <!-- 4 stars -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginBottom="4dp">
+
+                                <TextView
+                                    android:layout_width="20dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="4"
+                                    android:textSize="12sp"
+                                    android:textColor="#666666"/>
+
+                                <ImageView
+                                    android:layout_width="12dp"
+                                    android:layout_height="12dp"
+                                    android:src="@drawable/ic_star_rate"
+                                    app:tint="#FFB300"
+                                    android:layout_marginStart="2dp"/>
+
+                                <ProgressBar
+                                    android:id="@+id/progressBar4Star"
+                                    style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_width="0dp"
+                                    android:layout_height="8dp"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="8dp"
+                                    android:progress="35"
+                                    android:progressTint="#FFB300"/>
+
+                                <TextView
+                                    android:id="@+id/tvCount4Star"
+                                    android:layout_width="30dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="35"
+                                    android:textSize="11sp"
+                                    android:textColor="#666666"
+                                    android:gravity="end"
+                                    android:layout_marginStart="8dp"/>
+                            </LinearLayout>
+
+                            <!-- 3 stars -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginBottom="4dp">
+
+                                <TextView
+                                    android:layout_width="20dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="3"
+                                    android:textSize="12sp"
+                                    android:textColor="#666666"/>
+
+                                <ImageView
+                                    android:layout_width="12dp"
+                                    android:layout_height="12dp"
+                                    android:src="@drawable/ic_star_rate"
+                                    app:tint="#FFB300"
+                                    android:layout_marginStart="2dp"/>
+
+                                <ProgressBar
+                                    android:id="@+id/progressBar3Star"
+                                    style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_width="0dp"
+                                    android:layout_height="8dp"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="8dp"
+                                    android:progress="15"
+                                    android:progressTint="#FFB300"/>
+
+                                <TextView
+                                    android:id="@+id/tvCount3Star"
+                                    android:layout_width="30dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="15"
+                                    android:textSize="11sp"
+                                    android:textColor="#666666"
+                                    android:gravity="end"
+                                    android:layout_marginStart="8dp"/>
+                            </LinearLayout>
+
+                            <!-- 2 stars -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginBottom="4dp">
+
+                                <TextView
+                                    android:layout_width="20dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="2"
+                                    android:textSize="12sp"
+                                    android:textColor="#666666"/>
+
+                                <ImageView
+                                    android:layout_width="12dp"
+                                    android:layout_height="12dp"
+                                    android:src="@drawable/ic_star_rate"
+                                    app:tint="#FFB300"
+                                    android:layout_marginStart="2dp"/>
+
+                                <ProgressBar
+                                    android:id="@+id/progressBar2Star"
+                                    style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_width="0dp"
+                                    android:layout_height="8dp"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="8dp"
+                                    android:progress="3"
+                                    android:progressTint="#FFB300"/>
+
+                                <TextView
+                                    android:id="@+id/tvCount2Star"
+                                    android:layout_width="30dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="3"
+                                    android:textSize="11sp"
+                                    android:textColor="#666666"
+                                    android:gravity="end"
+                                    android:layout_marginStart="8dp"/>
+                            </LinearLayout>
+
+                            <!-- 1 star -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <TextView
+                                    android:layout_width="20dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="1"
+                                    android:textSize="12sp"
+                                    android:textColor="#666666"/>
+
+                                <ImageView
+                                    android:layout_width="12dp"
+                                    android:layout_height="12dp"
+                                    android:src="@drawable/ic_star_rate"
+                                    app:tint="#FFB300"
+                                    android:layout_marginStart="2dp"/>
+
+                                <ProgressBar
+                                    android:id="@+id/progressBar1Star"
+                                    style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_width="0dp"
+                                    android:layout_height="8dp"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="8dp"
+                                    android:progress="2"
+                                    android:progressTint="#FFB300"/>
+
+                                <TextView
+                                    android:id="@+id/tvCount1Star"
+                                    android:layout_width="30dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="2"
+                                    android:textSize="11sp"
+                                    android:textColor="#666666"
+                                    android:gravity="end"
+                                    android:layout_marginStart="8dp"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Filter chips -->
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="none"
+                        android:layout_marginBottom="16dp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/chipAll"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:text="Tất cả (125)"
+                                android:textSize="13sp"
+                                android:textColor="@android:color/white"
+                                android:background="#2196F3"
+                                android:paddingHorizontal="16dp"
+                                android:gravity="center"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:id="@+id/chip5Star"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:text="5 ⭐ (70)"
+                                android:textSize="13sp"
+                                android:textColor="#666666"
+                                android:background="#E0E0E0"
+                                android:paddingHorizontal="16dp"
+                                android:gravity="center"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:id="@+id/chip4Star"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:text="4 ⭐ (35)"
+                                android:textSize="13sp"
+                                android:textColor="#666666"
+                                android:background="#E0E0E0"
+                                android:paddingHorizontal="16dp"
+                                android:gravity="center"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:id="@+id/chip3Star"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:text="3 ⭐ (15)"
+                                android:textSize="13sp"
+                                android:textColor="#666666"
+                                android:background="#E0E0E0"
+                                android:paddingHorizontal="16dp"
+                                android:gravity="center"
+                                android:layout_marginEnd="8dp"/>
+                            <TextView
+                                android:id="@+id/chip2Star"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:text="2 ⭐ (15)"
+                                android:textSize="13sp"
+                                android:textColor="#666666"
+                                android:background="#E0E0E0"
+                                android:paddingHorizontal="16dp"
+                                android:gravity="center"
+                                android:layout_marginEnd="8dp"/>
+                            <TextView
+                                android:id="@+id/chip1Star"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:text="1 ⭐ (15)"
+                                android:textSize="13sp"
+                                android:textColor="#666666"
+                                android:background="#E0E0E0"
+                                android:paddingHorizontal="16dp"
+                                android:gravity="center"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:id="@+id/chipWithComment"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:text="Có bình luận (89)"
+                                android:textSize="13sp"
+                                android:textColor="#666666"
+                                android:background="#E0E0E0"
+                                android:paddingHorizontal="16dp"
+                                android:gravity="center"/>
+                        </LinearLayout>
+                    </HorizontalScrollView>
+
+                    <!-- Reviews list -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewReviews"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"/>
+
+                    <!-- View all reviews button -->
+                    <TextView
+                        android:id="@+id/btnViewAllReviews"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:text="Xem tất cả đánh giá"
+                        android:textSize="14sp"
+                        android:textColor="#2196F3"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:background="?attr/selectableItemBackground"
+                        android:layout_marginTop="8dp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
         </LinearLayout>
     </ScrollView>

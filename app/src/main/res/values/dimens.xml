@@ -59,6 +59,7 @@
     <dimen name="text_size_xlarge">24sp</dimen>
     <dimen name="card_elevation_low">2dp</dimen>
 
-
-
+    <!-- Card dimensions -->
+    <dimen name="card_margin_bottom">16dp</dimen>
+    <dimen name="card_corner_radius">12dp</dimen>
 </resources>

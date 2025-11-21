@@ -309,4 +309,5 @@ class BookDao(private val db: SQLiteDatabase) {
             updatedAt = cursor.getString(cursor.getColumnIndexOrThrow("updated_at"))
         )
     }
+
 }
