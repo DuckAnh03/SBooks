@@ -38,7 +38,7 @@ class StaffOrderFragment : Fragment() {
     private lateinit var orderAdapter: StaffOrderAdapter
     private lateinit var orderDao: OrderDao
     private lateinit var sharedPrefs: SharedPrefsHelper
-    private var orderList = mutableListOf<OrderModel>()
+    private var allOrders = mutableListOf<OrderModel>() // Store all orders loaded from DB
     private var currentFilter = OrderModel.OrderStatus.PENDING
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -101,6 +101,7 @@ class StaffOrderFragment : Fragment() {
 
         spinnerOrderStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                // Apply additional filtering based on spinner if needed
                 filterOrders()
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -143,6 +144,9 @@ class StaffOrderFragment : Fragment() {
             else -> "Danh sách đơn hàng"
         }
 
+        // Clear search box when changing filter
+        etSearchOrder.setText("")
+
         loadOrders()
     }
 
@@ -158,20 +162,31 @@ class StaffOrderFragment : Fragment() {
 
     private fun loadOrders() {
         try {
-            orderList.clear()
-            val staffId = sharedPrefs.getUserId()
+            allOrders.clear()
 
+            // Load orders based on current filter - FIX: Load correct data from DB
             val orders = when (currentFilter) {
-                OrderModel.OrderStatus.PENDING -> orderDao.getOrdersByStatus(OrderModel.OrderStatus.PENDING)
-                OrderModel.OrderStatus.PROCESSING -> orderDao.getOrdersByStaff(staffId)
-                OrderModel.OrderStatus.DELIVERED -> orderDao.getOrdersByStatus(OrderModel.OrderStatus.DELIVERED)
+                OrderModel.OrderStatus.PENDING -> {
+                    orderDao.getOrdersByStatus(OrderModel.OrderStatus.PENDING)
+                }
+                OrderModel.OrderStatus.PROCESSING -> {
+                    // Include both PROCESSING and SHIPPING statuses for "Đang xử lý" tab
+                    val processingOrders = orderDao.getOrdersByStatus(OrderModel.OrderStatus.PROCESSING)
+                    val shippingOrders = orderDao.getOrdersByStatus(OrderModel.OrderStatus.SHIPPING)
+                    processingOrders + shippingOrders
+                }
+                OrderModel.OrderStatus.DELIVERED -> {
+                    orderDao.getOrdersByStatus(OrderModel.OrderStatus.DELIVERED)
+                }
                 else -> orderDao.getAllOrders()
             }
 
-            orderList.addAll(orders)
-            updateUI()
+            allOrders.addAll(orders)
+            filterOrders() // Apply search filter if any
         } catch (e: Exception) {
             Log.e(TAG, "Error loading orders", e)
+            allOrders.clear()
+            updateUI(emptyList())
         }
     }
 
@@ -179,24 +194,29 @@ class StaffOrderFragment : Fragment() {
         val query = etSearchOrder.text.toString().trim()
 
         try {
+            // FIX: Filter from already loaded orders (allOrders) instead of querying DB again
             val filteredList = if (query.isEmpty()) {
-                orderList
+                allOrders
             } else {
-                orderDao.searchOrders(query, currentFilter.value)
+                // Filter in memory based on search query
+                allOrders.filter { order ->
+                    order.orderCode.contains(query, ignoreCase = true) ||
+                            order.customerName.contains(query, ignoreCase = true) ||
+                            order.customerPhone.contains(query, ignoreCase = true)
+                }
             }
 
-            orderAdapter.submitList(filteredList)
-            updateOrderCount(filteredList.size)
-            toggleEmptyState(filteredList.isEmpty())
+            updateUI(filteredList)
         } catch (e: Exception) {
             Log.e(TAG, "Error filtering orders", e)
+            updateUI(emptyList())
         }
     }
 
-    private fun updateUI() {
-        orderAdapter.submitList(orderList)
-        updateOrderCount(orderList.size)
-        toggleEmptyState(orderList.isEmpty())
+    private fun updateUI(orders: List<OrderModel>) {
+        orderAdapter.submitList(orders.toList()) // Create new list to trigger DiffUtil
+        updateOrderCount(orders.size)
+        toggleEmptyState(orders.isEmpty())
     }
 
     private fun updateOrderCount(count: Int) {
@@ -256,7 +276,7 @@ class StaffOrderFragment : Fragment() {
             val result = orderDao.updateOrderStatus(order.id, newStatus, staffId, staffName)
             if (result > 0) {
                 DialogUtils.showToast(requireContext(), "Cập nhật trạng thái thành công")
-                loadOrders()
+                loadOrders() // Reload to get fresh data
             } else {
                 DialogUtils.showErrorDialog(requireContext(), "Không thể cập nhật trạng thái") {}
             }
