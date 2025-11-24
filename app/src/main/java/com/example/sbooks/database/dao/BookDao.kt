@@ -94,6 +94,12 @@ class BookDao(private val db: SQLiteDatabase) {
         }
     }
 
+    fun getBookById(bookId: String): BookModel? {
+        // Chuyển String ID thành Int để gọi hàm gốc
+        val id = bookId.toIntOrNull() ?: return null
+        return getBookById(id)
+    }
+
     fun getAllBooks(): List<BookModel> {
         val books = mutableListOf<BookModel>()
         val cursor = db.rawQuery("""
@@ -128,7 +134,47 @@ class BookDao(private val db: SQLiteDatabase) {
         }
         return books
     }
+    fun BOTsearchBooks(query: String, limit: Int): List<BookModel> {
+        val books = mutableListOf<BookModel>()
+        val searchQuery = "%$query%"
 
+        // Sử dụng c.name (category_name) trong tìm kiếm
+        val sqlQuery = """
+            SELECT b.*, c.name as category_name
+            FROM ${DatabaseHelper.TABLE_BOOKS} b
+            LEFT JOIN ${DatabaseHelper.TABLE_CATEGORIES} c ON b.category_id = c.id
+            WHERE b.status = 'active'
+              AND (
+                b.title LIKE ?
+                OR b.author LIKE ?
+                OR b.description LIKE ?
+                OR c.name LIKE ?
+              )
+            ORDER BY 
+                CASE WHEN b.title LIKE ? THEN 0 ELSE 1 END, -- Ưu tiên sách có tiêu đề khớp
+                b.rating DESC, 
+                b.sold_count DESC
+            LIMIT ?
+        """
+
+        val args = arrayOf(
+            searchQuery,
+            searchQuery,
+            searchQuery,
+            searchQuery,
+            "%$query%", // Dùng lại query cho ưu tiên title
+            limit.toString()
+        )
+
+        val cursor = db.rawQuery(sqlQuery, args)
+
+        cursor.use {
+            while (it.moveToNext()) {
+                books.add(cursorToBook(it))
+            }
+        }
+        return books
+    }
     fun searchBooks(filter: SearchFilter): List<BookModel> {
         val books = mutableListOf<BookModel>()
         val whereConditions = mutableListOf<String>()

@@ -13,6 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
+import androidx.lifecycle.ViewModelProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.sbooks.fragments.customer.CartFragment
@@ -32,6 +33,7 @@ import kotlinx.coroutines.*
 
 // Import từ code chatbot
 import com.example.sbooks.models.ChatViewModel
+import com.example.sbooks.models.ChatViewModelFactory
 import com.example.sbooks.ui.theme.ChatBubbleOverlay
 import androidx.compose.material3.MaterialTheme
 
@@ -42,7 +44,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     // Chat ViewModel
-    private val chatViewModel: ChatViewModel by viewModels()
+    private lateinit var chatViewModel: ChatViewModel
 
     private val broadcastWifi = BroadcastWifi()
     private lateinit var binding: ActivityHomeBinding
@@ -74,6 +76,11 @@ class HomeActivity : AppCompatActivity() {
         dbHelper = DatabaseHelper(this)
         bookDao = BookDao(dbHelper.writableDatabase)
 
+        // 1. Tạo factory với dependency (bookDao)
+        val factory = ChatViewModelFactory(bookDao)
+
+        // 2. Khởi tạo ViewModel bằng ViewModelProvider và Factory
+        chatViewModel = ViewModelProvider(this, factory).get(ChatViewModel::class.java)
         // Khởi tạo Chat
         chatViewModel.initializeChat("") // Thay YOUR_API_KEY
 
@@ -130,9 +137,8 @@ class HomeActivity : AppCompatActivity() {
         searchView.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) {
                 val query = searchView.text.toString().trim()
-                if (query.isNotEmpty()) {
-                    performSearch(query)
-                }
+                // Cho phép search với query rỗng để hiển thị tất cả sách
+                performSearch(query)
                 true
             } else {
                 false
@@ -141,6 +147,8 @@ class HomeActivity : AppCompatActivity() {
 
         btnClear.setOnClickListener {
             searchView.text.clear()
+            // Khi clear, tự động hiển thị tất cả sách
+            performSearch("")
             val imm = getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
             imm.hideSoftInputFromWindow(searchView.windowToken, 0)
         }
@@ -181,7 +189,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun performSearch(query: String) {
-        Log.d(TAG, "performSearch: Searching for: $query")
+        Log.d(TAG, "performSearch: Searching for: '$query'")
 
         searchScope.launch {
             try {
@@ -195,25 +203,27 @@ class HomeActivity : AppCompatActivity() {
 
                 Log.d(TAG, "performSearch: Found ${results.size} books")
 
-                if (results.isEmpty()) {
-                    Toast.makeText(
-                        this@HomeActivity,
-                        "Không tìm thấy sách với từ khóa: $query",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    val fragment = HomeFragment.newInstance(query)
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, fragment)
-                        .addToBackStack(null)
-                        .commit()
+                // Luôn tạo fragment mới, kể cả khi query rỗng
+                val fragment = HomeFragment.newInstance(query)
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit()
 
-                    Toast.makeText(
-                        this@HomeActivity,
-                        "Tìm thấy ${results.size} cuốn sách",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                // Hiển thị thông báo phù hợp
+                val message = if (query.isEmpty()) {
+                    "Hiển thị tất cả ${results.size} cuốn sách"
+                } else if (results.isEmpty()) {
+                    "Không tìm thấy sách với từ khóa: $query"
+                } else {
+                    "Tìm thấy ${results.size} cuốn sách"
                 }
+
+                Toast.makeText(
+                    this@HomeActivity,
+                    message,
+                    Toast.LENGTH_SHORT
+                ).show()
 
                 val imm = getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
                 imm.hideSoftInputFromWindow(binding.searchView.windowToken, 0)
