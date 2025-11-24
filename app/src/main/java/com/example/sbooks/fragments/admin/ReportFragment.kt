@@ -273,50 +273,109 @@ class ReportFragment : Fragment() {
         }
     }
 
+    private fun parseOrderDate(dateString: String): Calendar {
+        // Parse the order date string to Calendar
+        // Format: "2025-11-21 13:16:20" (yyyy-MM-dd HH:mm:ss)
+        val calendar = Calendar.getInstance()
+        try {
+            val datePart = dateString.split(" ")[0] // Get "2025-11-21"
+            val parts = datePart.split("-")
+            if (parts.size == 3) {
+                calendar.set(Calendar.YEAR, parts[0].toInt())
+                calendar.set(Calendar.MONTH, parts[1].toInt() - 1) // Month is 0-based
+                calendar.set(Calendar.DAY_OF_MONTH, parts[2].toInt())
+                calendar.set(Calendar.HOUR_OF_DAY, 0)
+                calendar.set(Calendar.MINUTE, 0)
+                calendar.set(Calendar.SECOND, 0)
+                calendar.set(Calendar.MILLISECOND, 0)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error parsing order date: $dateString", e)
+        }
+        return calendar
+    }
+
     private fun loadReportData(period: String = "today") {
         try {
             // Load basic statistics based on period
             val allOrders = orderDao.getAllOrders()
             val filteredOrders = when (period) {
                 "today" -> {
-                    val today = Calendar.getInstance()
+                    val today = Calendar.getInstance().apply {
+                        set(Calendar.HOUR_OF_DAY, 0)
+                        set(Calendar.MINUTE, 0)
+                        set(Calendar.SECOND, 0)
+                        set(Calendar.MILLISECOND, 0)
+                    }
+                    val todayEnd = Calendar.getInstance().apply {
+                        set(Calendar.HOUR_OF_DAY, 23)
+                        set(Calendar.MINUTE, 59)
+                        set(Calendar.SECOND, 59)
+                        set(Calendar.MILLISECOND, 999)
+                    }
+
                     allOrders.filter { order ->
-                        val orderDate = Calendar.getInstance()
-                        // Assuming order has a date field - adjust based on your OrderModel
-                        // orderDate.time = order.orderDate
-                        isSameDay(orderDate, today)
+                        val orderDate = parseOrderDate(order.orderDate)
+                        !orderDate.before(today) && !orderDate.after(todayEnd)
                     }
                 }
                 "week" -> {
                     val weekStart = Calendar.getInstance().apply {
                         set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
-                        DatePickerUtils.getStartOfDay(this)
+                        set(Calendar.HOUR_OF_DAY, 0)
+                        set(Calendar.MINUTE, 0)
+                        set(Calendar.SECOND, 0)
+                        set(Calendar.MILLISECOND, 0)
                     }
+                    val weekEnd = Calendar.getInstance().apply {
+                        set(Calendar.HOUR_OF_DAY, 23)
+                        set(Calendar.MINUTE, 59)
+                        set(Calendar.SECOND, 59)
+                        set(Calendar.MILLISECOND, 999)
+                    }
+
                     allOrders.filter { order ->
-                        val orderDate = Calendar.getInstance()
-                        // orderDate.time = order.orderDate
-                        orderDate.after(weekStart)
+                        val orderDate = parseOrderDate(order.orderDate)
+                        !orderDate.before(weekStart) && !orderDate.after(weekEnd)
                     }
                 }
                 "month" -> {
                     val monthStart = Calendar.getInstance().apply {
                         set(Calendar.DAY_OF_MONTH, 1)
-                        DatePickerUtils.getStartOfDay(this)
+                        set(Calendar.HOUR_OF_DAY, 0)
+                        set(Calendar.MINUTE, 0)
+                        set(Calendar.SECOND, 0)
+                        set(Calendar.MILLISECOND, 0)
                     }
+                    val monthEnd = Calendar.getInstance().apply {
+                        set(Calendar.HOUR_OF_DAY, 23)
+                        set(Calendar.MINUTE, 59)
+                        set(Calendar.SECOND, 59)
+                        set(Calendar.MILLISECOND, 999)
+                    }
+
                     allOrders.filter { order ->
-                        val orderDate = Calendar.getInstance()
-                        // orderDate.time = order.orderDate
-                        orderDate.after(monthStart)
+                        val orderDate = parseOrderDate(order.orderDate)
+                        !orderDate.before(monthStart) && !orderDate.after(monthEnd)
                     }
                 }
                 "custom" -> {
                     if (customFromDate != null && customToDate != null) {
-                        val fromDate = DatePickerUtils.getStartOfDay(customFromDate!!)
-                        val toDate = DatePickerUtils.getEndOfDay(customToDate!!)
+                        val fromDate = customFromDate!!.clone() as Calendar
+                        fromDate.set(Calendar.HOUR_OF_DAY, 0)
+                        fromDate.set(Calendar.MINUTE, 0)
+                        fromDate.set(Calendar.SECOND, 0)
+                        fromDate.set(Calendar.MILLISECOND, 0)
+
+                        val toDate = customToDate!!.clone() as Calendar
+                        toDate.set(Calendar.HOUR_OF_DAY, 23)
+                        toDate.set(Calendar.MINUTE, 59)
+                        toDate.set(Calendar.SECOND, 59)
+                        toDate.set(Calendar.MILLISECOND, 999)
+
                         allOrders.filter { order ->
-                            val orderDate = Calendar.getInstance()
-                            // orderDate.time = order.orderDate
-                            orderDate.after(fromDate) && orderDate.before(toDate)
+                            val orderDate = parseOrderDate(order.orderDate)
+                            !orderDate.before(fromDate) && !orderDate.after(toDate)
                         }
                     } else allOrders
                 }

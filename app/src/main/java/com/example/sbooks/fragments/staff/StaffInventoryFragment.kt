@@ -125,9 +125,10 @@ class StaffInventoryFragment : Fragment() {
         try {
             inventoryList.clear()
             inventoryList.addAll(bookDao.getAllBooks())
-            updateUI()
+            filterInventory() // Apply current filter after loading
         } catch (e: Exception) {
             Log.e(TAG, "Error loading inventory", e)
+            updateUI()
         }
     }
 
@@ -151,13 +152,14 @@ class StaffInventoryFragment : Fragment() {
 
         try {
             var filteredList = if (query.isEmpty()) {
-                inventoryList
+                inventoryList.toList() // Create a new list to avoid reference issues
             } else {
-                val filter = SearchFilter(
-                    query = query,
-                    sortBy = SearchFilter.SortOption.NAME_ASC
-                )
-                bookDao.searchBooks(filter)
+                inventoryList.filter { book ->
+                    book.title.contains(query, ignoreCase = true) ||
+                            book.author.contains(query, ignoreCase = true) ||
+                            book.categoryName.contains(query, ignoreCase = true) ||
+                            book.isbn.contains(query, ignoreCase = true)
+                }
             }
 
             // Apply stock filter
@@ -168,7 +170,9 @@ class StaffInventoryFragment : Fragment() {
                 else -> filteredList
             }
 
-            inventoryAdapter.submitList(filteredList)
+            // Force adapter to update with new list
+            inventoryAdapter.submitList(null) // Clear first
+            inventoryAdapter.submitList(filteredList.toList()) // Submit new list
             updateInventoryCount(filteredList.size)
             toggleEmptyState(filteredList.isEmpty())
         } catch (e: Exception) {
@@ -252,10 +256,20 @@ class StaffInventoryFragment : Fragment() {
         try {
             val result = bookDao.updateBookStock(book.id, newStock)
             if (result > 0) {
+                // Update the book object in memory immediately
+
                 DialogUtils.showToast(requireContext(), "Cập nhật tồn kho thành công")
-                loadInventory()
-                loadStatistics()
                 dialog.dismiss()
+
+                // Reload data from database to get all latest values
+                inventoryList.clear()
+                inventoryList.addAll(bookDao.getAllBooks())
+
+                // Reapply current filter and search
+                filterInventory()
+
+                // Reload statistics
+                loadStatistics()
             } else {
                 DialogUtils.showErrorDialog(requireContext(), "Không thể cập nhật tồn kho") {}
             }

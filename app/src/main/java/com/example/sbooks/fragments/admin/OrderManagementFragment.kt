@@ -15,6 +15,8 @@ import com.example.sbooks.database.DatabaseHelper
 import com.example.sbooks.database.dao.OrderDao
 import com.example.sbooks.models.OrderModel
 import com.example.sbooks.utils.DialogUtils
+import com.example.sbooks.utils.DatePickerUtils
+import java.util.*
 
 class OrderManagementFragment : Fragment() {
 
@@ -38,6 +40,10 @@ class OrderManagementFragment : Fragment() {
     private lateinit var orderAdapter: OrderAdapter
     private lateinit var orderDao: OrderDao
     private var orderList = mutableListOf<OrderModel>()
+
+    // Date range filter
+    private var filterFromDate: Calendar? = null
+    private var filterToDate: Calendar? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_order_management, container, false)
@@ -107,12 +113,56 @@ class OrderManagementFragment : Fragment() {
 
     private fun setupDateButtons() {
         btnDateFrom.setOnClickListener {
-            DialogUtils.showToast(requireContext(), "Chọn ngày bắt đầu")
+            DatePickerUtils.showDatePicker(
+                requireContext(),
+                btnDateFrom,
+                filterFromDate
+            ) { selectedDate ->
+                filterFromDate = selectedDate
+                checkDateRangeAndFilter()
+            }
         }
 
         btnDateTo.setOnClickListener {
-            DialogUtils.showToast(requireContext(), "Chọn ngày kết thúc")
+            DatePickerUtils.showDatePicker(
+                requireContext(),
+                btnDateTo,
+                filterToDate
+            ) { selectedDate ->
+                filterToDate = selectedDate
+                checkDateRangeAndFilter()
+            }
         }
+
+        // Add long click to clear date filters
+        btnDateFrom.setOnLongClickListener {
+            filterFromDate = null
+            btnDateFrom.text = "Từ ngày"
+            filterOrders()
+            DialogUtils.showToast(requireContext(), "Đã xóa bộ lọc ngày bắt đầu")
+            true
+        }
+
+        btnDateTo.setOnLongClickListener {
+            filterToDate = null
+            btnDateTo.text = "Đến ngày"
+            filterOrders()
+            DialogUtils.showToast(requireContext(), "Đã xóa bộ lọc ngày kết thúc")
+            true
+        }
+    }
+
+    private fun checkDateRangeAndFilter() {
+        // Validate date range if both dates are selected
+        if (filterFromDate != null && filterToDate != null) {
+            if (filterFromDate!!.after(filterToDate)) {
+                DialogUtils.showToast(requireContext(), "Ngày bắt đầu không thể sau ngày kết thúc")
+                return
+            }
+        }
+
+        // Apply filter
+        filterOrders()
     }
 
     private fun setupSearchListener() {
@@ -162,13 +212,66 @@ class OrderManagementFragment : Fragment() {
         }
 
         try {
-            val filteredList = orderDao.searchOrders(query, selectedStatus)
+            // Get orders filtered by search query and status
+            var filteredList = orderDao.searchOrders(query, selectedStatus)
+
+            // Apply date range filter
+            filteredList = applyDateRangeFilter(filteredList)
+
             orderAdapter.submitList(filteredList)
             updateOrderCount(filteredList.size)
             toggleEmptyState(filteredList.isEmpty())
         } catch (e: Exception) {
             Log.e(TAG, "Error filtering orders", e)
         }
+    }
+
+    private fun applyDateRangeFilter(orders: List<OrderModel>): List<OrderModel> {
+        // If no date filters are set, return original list
+        if (filterFromDate == null && filterToDate == null) {
+            return orders
+        }
+
+        return orders.filter { order ->
+            val orderDate = parseOrderDate(order.orderDate)
+
+            var matchesFromDate = true
+            var matchesToDate = true
+
+            if (filterFromDate != null) {
+                val fromDate = DatePickerUtils.getStartOfDay(filterFromDate!!)
+                matchesFromDate = orderDate.after(fromDate) || orderDate == fromDate
+            }
+
+            if (filterToDate != null) {
+                val toDate = DatePickerUtils.getEndOfDay(filterToDate!!)
+                matchesToDate = orderDate.before(toDate) || orderDate == toDate
+            }
+
+            matchesFromDate && matchesToDate
+        }
+    }
+
+    private fun parseOrderDate(dateString: String): Calendar {
+        // Parse the order date string to Calendar
+        // Format: "2025-11-21 13:16:20" (yyyy-MM-dd HH:mm:ss)
+        val calendar = Calendar.getInstance()
+        try {
+            val datePart = dateString.split(" ")[0] // Get "2025-11-21"
+            val parts = datePart.split("-")
+            if (parts.size == 3) {
+                calendar.set(Calendar.YEAR, parts[0].toInt())
+                calendar.set(Calendar.MONTH, parts[1].toInt() - 1) // Month is 0-based
+                calendar.set(Calendar.DAY_OF_MONTH, parts[2].toInt())
+                calendar.set(Calendar.HOUR_OF_DAY, 0)
+                calendar.set(Calendar.MINUTE, 0)
+                calendar.set(Calendar.SECOND, 0)
+                calendar.set(Calendar.MILLISECOND, 0)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error parsing order date: $dateString", e)
+        }
+        return calendar
     }
 
     private fun updateUI() {
