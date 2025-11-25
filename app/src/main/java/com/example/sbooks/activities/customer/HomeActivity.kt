@@ -82,7 +82,7 @@ class HomeActivity : AppCompatActivity() {
         // 2. Khởi tạo ViewModel bằng ViewModelProvider và Factory
         chatViewModel = ViewModelProvider(this, factory).get(ChatViewModel::class.java)
         // Khởi tạo Chat
-        chatViewModel.initializeChat("") // Thay YOUR_API_KEY
+        chatViewModel.initializeChat("AIzaSyCCIHXq7Sc_cRduM5ioNuNMmhiMUoFN-dc") // Thay YOUR_API_KEY
 
         // Sử dụng ViewBinding cho layout Home
         binding = ActivityHomeBinding.inflate(layoutInflater)

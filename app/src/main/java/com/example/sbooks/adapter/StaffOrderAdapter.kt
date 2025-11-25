@@ -3,12 +3,14 @@ package com.example.sbooks.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil // Import DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sbooks.R
 import com.example.sbooks.models.OrderModel
+import com.example.sbooks.utils.ImageUtils
 
 class StaffOrderAdapter(
     private val onViewDetailsClick: (OrderModel) -> Unit,
@@ -40,6 +42,8 @@ class StaffOrderAdapter(
         private val btnViewDetails: TextView = itemView.findViewById(R.id.btn_view_details)
         private val btnProcessOrder: TextView = itemView.findViewById(R.id.btn_processing_orders)
         private val btnContactCustomer: TextView = itemView.findViewById(R.id.btn_contact_customer)
+        private val iv_cusomter_avatar: ImageView = itemView.findViewById(R.id.iv_customer_avatar)
+
 
         fun bind(order: OrderModel) {
             tvOrderId.text = order.orderCode
@@ -50,6 +54,13 @@ class StaffOrderAdapter(
             tvCustomerAddress.text = order.customerAddress
             tvCustomerPhone.text = order.customerPhone
             tvOrderItems.text = "${order.getItemCount()} cuốn sách • ${order.getItemSummary()}"
+
+            if (order.customerAvatar.isNotEmpty()) {
+                val bitmap = ImageUtils.loadImageFromInternalStorage(order.customerAvatar)
+                if (bitmap != null) {
+                    iv_cusomter_avatar.setImageBitmap(bitmap)
+                }
+            }
 
             val isUrgent = order.isPending() && isOrderUrgent(order.orderDate)
             tvPriorityBadge.visibility = if (isUrgent) View.VISIBLE else View.GONE

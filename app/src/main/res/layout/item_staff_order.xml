@@ -99,15 +99,15 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
-                <ImageView
+                <com.example.sbooks.utils.CircleImageView
                     android:id="@+id/iv_customer_avatar"
-                    android:layout_width="@dimen/icon_size_medium"
-                    android:layout_height="@dimen/icon_size_medium"
-                    android:src="@drawable/ic_users"
-                    android:contentDescription="Avatar khách hàng"
-                    android:background="@drawable/bg_circle"
-                    android:padding="@dimen/spacing_tiny"
-                    app:tint="@color/colorPrimaryDark" />
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="@dimen/spacing_medium"
+                    app:border_width="2dp"
+                    app:border_color="@color/colorPrimary"
+                    app:background_color="@color/gray_light"
+                    android:src="@drawable/ic_users" />
 
                 <TextView
                     android:id="@+id/tv_customer_name"

@@ -194,7 +194,7 @@
                     android:id="@+id/cb_terms"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tôi đồng ý với điều khoản và điều kiện"
+                    android:text="Tôi dong tinh với điều khoản và điều kiện"
                     android:textSize="14sp"
                     android:textColor="#666666"
                     android:layout_marginBottom="16dp"

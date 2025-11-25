@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sbooks.R
 import com.example.sbooks.models.BestSellerBookModel
+import com.example.sbooks.utils.ImageUtils
+
 class BestSellerAdapter(
     private val onItemClick: (BestSellerBookModel) -> Unit
 ) : ListAdapter<BestSellerBookModel, BestSellerAdapter.BestSellerViewHolder>(BestSellerDiffCallback()) {
@@ -49,7 +51,12 @@ class BestSellerAdapter(
             }
 
             // Set book image (placeholder for now)
-            ivBookImage.setImageResource(R.drawable.ic_book)
+            if (book.image.isNotEmpty()) {
+                val bitmap = ImageUtils.loadImageFromInternalStorage(book.image)
+                if (bitmap != null) {
+                    ivBookImage.setImageBitmap(bitmap)
+                }
+            }
 
             // Click listener
             itemView.setOnClickListener { onItemClick(book) }

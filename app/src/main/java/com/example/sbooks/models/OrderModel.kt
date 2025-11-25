@@ -21,7 +21,9 @@ data class OrderModel(
     val staffName: String = "",
     val items: List<OrderItemModel> = emptyList(),
     val createdAt: String = "",
+    val customerAvatar: String = "",
     val updatedAt: String = ""
+
 ) {
     enum class OrderStatus(val value: String, val displayName: String) {
         PENDING("pending", "Chờ xử lý"),

@@ -82,13 +82,13 @@ class OrderDao(private val db: SQLiteDatabase) {
     }
 
     fun getOrderById(orderId: Int): OrderModel? {
-        val cursor = db.query(
-            DatabaseHelper.TABLE_ORDERS,
-            null,
-            "id = ?",
-            arrayOf(orderId.toString()),
-            null, null, null
-        )
+        // JOIN với bảng users để lấy avatar
+        val cursor = db.rawQuery("""
+            SELECT o.*, u.avatar as customer_avatar
+            FROM ${DatabaseHelper.TABLE_ORDERS} o
+            LEFT JOIN ${DatabaseHelper.TABLE_USERS} u ON o.customer_id = u.id
+            WHERE o.id = ?
+        """, arrayOf(orderId.toString()))
 
         return cursor.use {
             if (it.moveToFirst()) {
@@ -99,13 +99,12 @@ class OrderDao(private val db: SQLiteDatabase) {
     }
 
     fun getOrderByCode(orderCode: String): OrderModel? {
-        val cursor = db.query(
-            DatabaseHelper.TABLE_ORDERS,
-            null,
-            "order_code = ?",
-            arrayOf(orderCode),
-            null, null, null
-        )
+        val cursor = db.rawQuery("""
+            SELECT o.*, u.avatar as customer_avatar
+            FROM ${DatabaseHelper.TABLE_ORDERS} o
+            LEFT JOIN ${DatabaseHelper.TABLE_USERS} u ON o.customer_id = u.id
+            WHERE o.order_code = ?
+        """, arrayOf(orderCode))
 
         return cursor.use {
             if (it.moveToFirst()) {
@@ -117,12 +116,12 @@ class OrderDao(private val db: SQLiteDatabase) {
 
     fun getAllOrders(): List<OrderModel> {
         val orders = mutableListOf<OrderModel>()
-        val cursor = db.query(
-            DatabaseHelper.TABLE_ORDERS,
-            null,
-            null, null, null, null,
-            "created_at DESC"
-        )
+        val cursor = db.rawQuery("""
+            SELECT o.*, u.avatar as customer_avatar
+            FROM ${DatabaseHelper.TABLE_ORDERS} o
+            LEFT JOIN ${DatabaseHelper.TABLE_USERS} u ON o.customer_id = u.id
+            ORDER BY o.created_at DESC
+        """, null)
 
         cursor.use {
             while (it.moveToNext()) {
@@ -135,14 +134,13 @@ class OrderDao(private val db: SQLiteDatabase) {
 
     fun getOrdersByCustomer(customerId: Int): List<OrderModel> {
         val orders = mutableListOf<OrderModel>()
-        val cursor = db.query(
-            DatabaseHelper.TABLE_ORDERS,
-            null,
-            "customer_id = ?",
-            arrayOf(customerId.toString()),
-            null, null,
-            "created_at DESC"
-        )
+        val cursor = db.rawQuery("""
+            SELECT o.*, u.avatar as customer_avatar
+            FROM ${DatabaseHelper.TABLE_ORDERS} o
+            LEFT JOIN ${DatabaseHelper.TABLE_USERS} u ON o.customer_id = u.id
+            WHERE o.customer_id = ?
+            ORDER BY o.created_at DESC
+        """, arrayOf(customerId.toString()))
 
         cursor.use {
             while (it.moveToNext()) {
@@ -155,14 +153,13 @@ class OrderDao(private val db: SQLiteDatabase) {
 
     fun getOrdersByStatus(status: OrderModel.OrderStatus): List<OrderModel> {
         val orders = mutableListOf<OrderModel>()
-        val cursor = db.query(
-            DatabaseHelper.TABLE_ORDERS,
-            null,
-            "status = ?",
-            arrayOf(status.value),
-            null, null,
-            "created_at DESC"
-        )
+        val cursor = db.rawQuery("""
+            SELECT o.*, u.avatar as customer_avatar
+            FROM ${DatabaseHelper.TABLE_ORDERS} o
+            LEFT JOIN ${DatabaseHelper.TABLE_USERS} u ON o.customer_id = u.id
+            WHERE o.status = ?
+            ORDER BY o.created_at DESC
+        """, arrayOf(status.value))
 
         cursor.use {
             while (it.moveToNext()) {
@@ -175,14 +172,13 @@ class OrderDao(private val db: SQLiteDatabase) {
 
     fun getOrdersByStaff(staffId: Int): List<OrderModel> {
         val orders = mutableListOf<OrderModel>()
-        val cursor = db.query(
-            DatabaseHelper.TABLE_ORDERS,
-            null,
-            "staff_id = ?",
-            arrayOf(staffId.toString()),
-            null, null,
-            "created_at DESC"
-        )
+        val cursor = db.rawQuery("""
+            SELECT o.*, u.avatar as customer_avatar
+            FROM ${DatabaseHelper.TABLE_ORDERS} o
+            LEFT JOIN ${DatabaseHelper.TABLE_USERS} u ON o.customer_id = u.id
+            WHERE o.staff_id = ?
+            ORDER BY o.created_at DESC
+        """, arrayOf(staffId.toString()))
 
         cursor.use {
             while (it.moveToNext()) {
@@ -200,24 +196,24 @@ class OrderDao(private val db: SQLiteDatabase) {
 
         // Search query
         if (query.isNotEmpty()) {
-            whereConditions.add("(order_code LIKE ? OR customer_name LIKE ? OR customer_phone LIKE ?)")
+            whereConditions.add("(o.order_code LIKE ? OR o.customer_name LIKE ? OR o.customer_phone LIKE ?)")
             val searchQuery = "%$query%"
             args.addAll(listOf(searchQuery, searchQuery, searchQuery))
         }
 
         // Status filter
         if (status != null && status != "all") {
-            whereConditions.add("status = ?")
+            whereConditions.add("o.status = ?")
             args.add(status)
         }
 
         // Date range filter
         if (dateFrom != null) {
-            whereConditions.add("DATE(created_at) >= ?")
+            whereConditions.add("DATE(o.created_at) >= ?")
             args.add(dateFrom)
         }
         if (dateTo != null) {
-            whereConditions.add("DATE(created_at) <= ?")
+            whereConditions.add("DATE(o.created_at) <= ?")
             args.add(dateTo)
         }
 
@@ -226,9 +222,11 @@ class OrderDao(private val db: SQLiteDatabase) {
         } else ""
 
         val cursor = db.rawQuery("""
-            SELECT * FROM ${DatabaseHelper.TABLE_ORDERS}
+            SELECT o.*, u.avatar as customer_avatar
+            FROM ${DatabaseHelper.TABLE_ORDERS} o
+            LEFT JOIN ${DatabaseHelper.TABLE_USERS} u ON o.customer_id = u.id
             $whereClause
-            ORDER BY created_at DESC
+            ORDER BY o.created_at DESC
         """, args.toTypedArray())
 
         cursor.use {
@@ -292,6 +290,7 @@ class OrderDao(private val db: SQLiteDatabase) {
             customerEmail = cursor.getString(cursor.getColumnIndexOrThrow("customer_email")) ?: "",
             customerPhone = cursor.getString(cursor.getColumnIndexOrThrow("customer_phone")) ?: "",
             customerAddress = cursor.getString(cursor.getColumnIndexOrThrow("customer_address")) ?: "",
+            customerAvatar = cursor.getString(cursor.getColumnIndexOrThrow("customer_avatar")) ?: "", // LẤY AVATAR
             totalAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("total_amount")),
             shippingFee = cursor.getDouble(cursor.getColumnIndexOrThrow("shipping_fee")),
             discountAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("discount_amount")),
